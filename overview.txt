@@ -1,0 +1,44 @@
+you level up specific parts of your body, in order to keep your streak you need to do x many exercises which are set personally when you sign up. If you want to see a change in your body, you might pick intense, which requires you to do 5 or so exercises to keep up your streak.
+
+exercises:
+
+squat:
+  quads
+  gluts
+  hips
+  minor:
+    calves
+    hamstrings
+    lower back
+
+lunge:
+  quads
+  hamstrings
+  gluts
+  hips
+
+calf raises:
+  calves
+
+pushups:
+  pects
+  triceps
+  minor:
+    abs
+    shoulders
+
+crunches:
+  abs 
+
+leg raise:
+  hips
+  minor:
+    abs
+
+wall sit:
+  quads
+
+plank:
+  abs
+  hips
+  back
