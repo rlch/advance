@@ -25,9 +25,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   }
 
   Widget _buildWorkout(BuildContext context, Workout workout) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-
+    
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Card(
@@ -36,8 +34,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
         elevation: 3,
         color: Colors.white,
         child: Container(
-          width: screenWidth * 0.6,
-          height: screenHeight * 0.3,
+
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 15.0),
             child: Column(
@@ -155,7 +152,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 SizedBox(
-                  height: 80,
+                  height: 60,
                 ),
                 Align(
                   alignment: Alignment.topCenter,
@@ -163,12 +160,12 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                       tag: "image-${widget.workoutArea.title}",
                       child: Image.asset(
                         widget.workoutArea.imagePath,
-                        width: screenWidth * 1 / 3,
+                        width: screenWidth * 1 / 4,
                       )),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 32.0, vertical: 20),
+                      horizontal: 32.0, vertical: 15),
                   child: Container(),
                 ),
                 Center(
@@ -195,6 +192,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                     ),
                   ),
                 ),
+                SizedBox(height: 20,),
                 Expanded(
                   child: Center(
                       child: Villain(
@@ -208,21 +206,23 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              SizedBox(
-                                height: 0.45 * screenHeight,
-                                child: PageView.builder(
-                                  controller: _pageController,
-                                  itemCount: widget.workoutArea.workouts.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return _buildWorkout(context,
-                                        widget.workoutArea.workouts[index]);
-                                  },
+                              Container(
+                                child: Expanded(
+                                                                  child: PageView.builder(
+                                    controller: _pageController,
+                                    itemCount: widget.workoutArea.workouts.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return _buildWorkout(context,
+                                          widget.workoutArea.workouts[index]);
+                                    },
+                                  ),
                                 ),
                               )
                             ],
                           ))),
-                )
+                ),
+                SizedBox(height: 20,)
               ],
             ),
           ),

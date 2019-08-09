@@ -1,3 +1,4 @@
+import 'package:advance/components/scroll_behaviour.dart';
 import 'package:advance/components/workout_area.dart';
 import 'package:advance/screens/workout_detail.dart';
 import 'package:advance/styleguide.dart';
@@ -28,12 +29,15 @@ class _TrainState extends State<Train> {
       children: <Widget>[
         SizedBox(
           height: 0.6 * screenHeight,
-          child: PageView.builder(
-            controller: pageController,
-            itemCount: workoutAreas.length,
-            itemBuilder: (BuildContext context, int index) {
-              return _buildCard(context, workoutAreas[index]);
-            },
+          child: ScrollConfiguration(
+            behavior: BlankScrollBehaviour(),
+            child: PageView.builder(
+              controller: pageController,
+              itemCount: workoutAreas.length,
+              itemBuilder: (BuildContext context, int index) {
+                return _buildCard(context, workoutAreas[index]);
+              },
+            ),
           ),
         )
       ],
@@ -43,7 +47,7 @@ class _TrainState extends State<Train> {
   Widget _buildCard(BuildContext context, WorkoutArea workoutArea) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    
+
     return InkWell(
       onTap: () {
         Navigator.push(

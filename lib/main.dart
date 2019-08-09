@@ -3,6 +3,7 @@ import 'package:advance/pages/achievements.dart';
 import 'package:advance/pages/progress.dart';
 import 'package:advance/pages/shop.dart';
 import 'package:advance/pages/train.dart';
+import 'package:advance/screens/welcome.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_villains/villains/villains.dart';
@@ -10,7 +11,9 @@ import 'package:flutter_villains/villains/villains.dart';
 void main() => runApp(MaterialApp(
     navigatorObservers: [new VillainTransitionObserver()],
     theme: ThemeData(primarySwatch: Colors.blue),
-    home: MainController()));
+    home: WelcomeScreen(),
+    //home: MainController()
+    ));
 
 class MainController extends StatefulWidget {
   MainController({Key key}) : super(key: key);
@@ -55,28 +58,29 @@ class _MainControllerState extends State<MainController> {
       appBar: AppBar(
         elevation: 2,
         backgroundColor: Colors.white,
-        leading: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            IconButton(
-                icon: Icon(UiElements.fire),
-                tooltip: 'Streak',
-                onPressed: () {},
-                color: Colors.red),
-            Text(
-              '1',
-              style: TextStyle(
-                  fontFamily: 'WorkSans',
-                  fontWeight: FontWeight.w800,
-                  fontSize: 17,
-                  color: Colors.red),
-            ),
-          ],
-        ),
         actions: <Widget>[
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              IconButton(
+                  icon: Icon(UiElements.fire),
+                  tooltip: 'Streak',
+                  onPressed: () {},
+                  color: Colors.red),
+              Text(
+                '1',
+                style: TextStyle(
+                    fontFamily: 'WorkSans',
+                    fontWeight: FontWeight.w800,
+                    fontSize: 17,
+                    color: Colors.red),
+              ),
+            ],
+          ),
+          SizedBox(width: 15,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               IconButton(

@@ -1,3 +1,4 @@
+import 'package:advance/components/scroll_behaviour.dart';
 import 'package:advance/components/ui_elements_icons.dart';
 import 'package:flutter/material.dart';
 import '../components/shop_items.dart';
@@ -151,16 +152,18 @@ class _ShopState extends State<Shop> {
         }
       }
     }
-
     return shop;
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        child: Column(
-          children: _buildShop(context),
+    return ScrollConfiguration(
+      behavior: BlankScrollBehaviour(),
+      child: SingleChildScrollView(
+        child: Container(
+          child: Column(
+            children: _buildShop(context),
+          ),
         ),
       ),
     );

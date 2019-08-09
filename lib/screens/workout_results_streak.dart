@@ -21,6 +21,7 @@ class WorkoutResultsStreakScreen extends StatefulWidget {
 class _WorkoutResultsStreakScreenState extends State<WorkoutResultsStreakScreen> {
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.width;
     return Scaffold(
         body: Stack(
       fit: StackFit.expand,
@@ -64,8 +65,8 @@ class _WorkoutResultsStreakScreenState extends State<WorkoutResultsStreakScreen>
                   padding: const EdgeInsets.only(bottom: 20),
                   child: CircularPercentIndicator(
                     reverse: true,
-                    radius: 200,
-                    lineWidth: 20,
+                    radius: 160,
+                    lineWidth: 18,
                     animation: true,
                     percent: 0.5,
                     circularStrokeCap: CircularStrokeCap.round,
@@ -94,7 +95,7 @@ class _WorkoutResultsStreakScreenState extends State<WorkoutResultsStreakScreen>
                 ),
               ),
               Container(
-                height: 350,
+                height: screenHeight*0.65,
                 child: StreakChart(
                   themeColor: widget.workoutArea.getButtonColor(),
                 ),
