@@ -1,6 +1,7 @@
 import 'package:advance/components/streak_chart.dart';
 import 'package:advance/components/workout.dart';
 import 'package:advance/components/workout_area.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_villains/villain.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -65,7 +66,7 @@ class _WorkoutResultsStreakScreenState extends State<WorkoutResultsStreakScreen>
                   padding: const EdgeInsets.only(bottom: 20),
                   child: CircularPercentIndicator(
                     reverse: true,
-                    radius: 160,
+                    radius: screenHeight * 0.4,
                     lineWidth: 18,
                     animation: true,
                     percent: 0.5,
@@ -101,18 +102,15 @@ class _WorkoutResultsStreakScreenState extends State<WorkoutResultsStreakScreen>
                 ),
               ),
               Expanded(
-                  child: Padding(
-                padding: const EdgeInsets.only(bottom: 40),
-                child: Center(
-                  child: Text(
+                  child: AutoSizeText(
                     "Train every day to maintain your streak!",
+                    softWrap: true,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                         fontFamily: "WorkSans",
                         fontSize: 18,
                         color: Colors.white),
-                  ),
-                ),
-              )),
+                  )),
               Padding(
                 padding: const EdgeInsets.only(bottom: 50.0),
                 child: RaisedButton(

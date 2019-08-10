@@ -156,7 +156,7 @@ class _MainControllerState extends State<MainController> {
                   UiElements.trophy_active,
                   color: Colors.orange,
                 ),
-                title: Text("Achievements")),
+                title: Text("Goals")),
             BubbleBottomBarItem(
                 backgroundColor: Colors.green,
                 icon: Icon(

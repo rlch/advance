@@ -102,6 +102,8 @@ class _WorkoutResultsLevelScreenState extends State<WorkoutResultsLevelScreen> {
                 child: Center(
                   child: Text(
                     "Keep training to level up your workouts!",
+                    softWrap: true,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                         fontFamily: "WorkSans",
                         fontSize: 18,
