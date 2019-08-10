@@ -3,7 +3,7 @@ import 'package:advance/pages/achievements.dart';
 import 'package:advance/pages/progress.dart';
 import 'package:advance/pages/shop.dart';
 import 'package:advance/pages/train.dart';
-import 'package:advance/screens/welcome.dart';
+import 'package:advance/screens/welcome/welcome.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_villains/villains/villains.dart';

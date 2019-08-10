@@ -1,4 +1,4 @@
-import 'package:advance/screens/get_started.dart';
+import 'package:advance/screens/welcome/get_started.dart';
 import 'package:advance/styleguide.dart';
 import 'package:flutter/material.dart';
 
