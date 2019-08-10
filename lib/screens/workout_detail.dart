@@ -25,7 +25,6 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   }
 
   Widget _buildWorkout(BuildContext context, Workout workout) {
-    
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Card(
@@ -33,77 +32,73 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 3,
         color: Colors.white,
-        child: Container(
-
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 15.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    Text(
-                      workout.title,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 15.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  Text(
+                    workout.title,
+                    style: TextStyle(
+                        fontFamily: "WorkSans",
+                        fontSize: 23,
+                        fontWeight: FontWeight.w500),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text("LEVEL ${workout.requiredLevel}",
                       style: TextStyle(
                           fontFamily: "WorkSans",
-                          fontSize: 23,
-                          fontWeight: FontWeight.w500),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.black.withOpacity(0.6)))
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.all(40.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Column(
+                      children: <Widget>[Icon(Icons.timer), Text("5 mins")],
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text("LEVEL ${workout.requiredLevel}",
-                        style: TextStyle(
-                            fontFamily: "WorkSans",
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.black.withOpacity(0.6)))
+                    Column(
+                      children: <Widget>[
+                        Icon(UiElements.progress),
+                        Text(workout.getDifficultyString())
+                      ],
+                    )
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(40.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[Icon(Icons.timer), Text("5 mins")],
-                      ),
-                      Column(
-                        children: <Widget>[
-                          Icon(UiElements.progress),
-                          Text(workout.getDifficultyString())
-                        ],
+              ),
+              RaisedButton(
+                color: widget.workoutArea.getButtonColor(),
+                textColor: Colors.white,
+                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 22),
+                onPressed: () {
+                  if (workout.requiredLevel <
+                      widget.workoutArea.experience.level) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => WorkoutCountdownScreen(
+                                workout, widget.workoutArea)));
+                  }
+                },
+                child: (workout.requiredLevel <
+                        widget.workoutArea.experience.level)
+                    ? Text(
+                        'Train',
+                        style: TextStyle(fontSize: 20, fontFamily: "WorkSans"),
                       )
-                    ],
-                  ),
-                ),
-                RaisedButton(
-                  color: widget.workoutArea.getButtonColor(),
-                  textColor: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 22),
-                  onPressed: () {
-                    if (workout.requiredLevel <
-                        widget.workoutArea.experience.level) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  WorkoutCountdownScreen(workout, widget.workoutArea)));
-                    }
-                  },
-                  child: (workout.requiredLevel <
-                          widget.workoutArea.experience.level)
-                      ? Text(
-                          'Train',
-                          style:
-                              TextStyle(fontSize: 20, fontFamily: "WorkSans"),
-                        )
-                      : Icon(Icons.lock_outline),
-                  shape: new RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40)),
-                )
-              ],
-            ),
+                    : Icon(Icons.lock_outline),
+                shape: new RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(40)),
+              )
+            ],
           ),
         ),
       ),
@@ -113,7 +108,6 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       body: Stack(
@@ -140,7 +134,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                   iconSize: 40,
                   icon: Icon(Icons.close),
                   color: Colors.white.withOpacity(0.9),
-                  onPressed: () {        
+                  onPressed: () {
                     Navigator.pop(context);
                   },
                 ),
@@ -180,7 +174,10 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(32, 0, 8, 0),
                   child: Villain(
-                    villainAnimation: VillainAnimation.fromBottom(relativeOffset: 0.2, from: Duration(milliseconds: 100), to: Duration(milliseconds:500)),
+                    villainAnimation: VillainAnimation.fromBottom(
+                        relativeOffset: 0.2,
+                        from: Duration(milliseconds: 100),
+                        to: Duration(milliseconds: 500)),
                     secondaryVillainAnimation: VillainAnimation.fade(),
                     animateExit: true,
                     child: Center(
@@ -192,7 +189,9 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20,),
+                SizedBox(
+                  height: 20,
+                ),
                 Expanded(
                   child: Center(
                       child: Villain(
@@ -208,9 +207,10 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                             children: <Widget>[
                               Container(
                                 child: Expanded(
-                                                                  child: PageView.builder(
+                                  child: PageView.builder(
                                     controller: _pageController,
-                                    itemCount: widget.workoutArea.workouts.length,
+                                    itemCount:
+                                        widget.workoutArea.workouts.length,
                                     itemBuilder:
                                         (BuildContext context, int index) {
                                       return _buildWorkout(context,
@@ -222,7 +222,9 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                             ],
                           ))),
                 ),
-                SizedBox(height: 20,)
+                SizedBox(
+                  height: 20,
+                )
               ],
             ),
           ),

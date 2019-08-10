@@ -1,16 +1,16 @@
 import 'package:advance/main.dart';
 import 'package:advance/styleguide.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_villains/villain.dart';
+import 'package:flutter_villains/villains/villains.dart';
 
-class SignUpFormScreen extends StatefulWidget {
-  SignUpFormScreen({Key key}) : super(key: key);
+class LoginFormScreen extends StatefulWidget {
+  LoginFormScreen({Key key}) : super(key: key);
 
   @override
-  _SignUpFormScreenState createState() => _SignUpFormScreenState();
+  _LoginFormScreenState createState() => _LoginFormScreenState();
 }
 
-class _SignUpFormScreenState extends State<SignUpFormScreen> {
+class _LoginFormScreenState extends State<LoginFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -21,7 +21,10 @@ class _SignUpFormScreenState extends State<SignUpFormScreen> {
                 gradient: LinearGradient(
                     begin: Alignment.topRight,
                     end: Alignment.bottomLeft,
-                    colors: [Colors.pink.shade200, Colors.redAccent.shade400])),
+                    colors: [
+                  Colors.pink.shade200,
+                  Colors.redAccent.shade400
+                ])),
           ),
           SafeArea(
             child: Column(
@@ -48,7 +51,10 @@ class _SignUpFormScreenState extends State<SignUpFormScreen> {
                       ],
                     )),
                 Villain(
-                  villainAnimation: VillainAnimation.fade(),
+                  villainAnimation: VillainAnimation.fromBottom(
+                    relativeOffset: 0.4,
+                  ),
+                  secondaryVillainAnimation: VillainAnimation.fade(),
                   child: Column(
                     children: <Widget>[
                       Padding(
@@ -108,20 +114,23 @@ class _SignUpFormScreenState extends State<SignUpFormScreen> {
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.check,
-                      color: Colors.white,
-                      size: 40,
+                Villain(
+                  villainAnimation: VillainAnimation.fade(),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 40,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst);
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            builder: (context) => MainController()));
+                      },
                     ),
-                    onPressed: () {
-                      Navigator.of(context)
-                          .popUntil((route) => route.isFirst);
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => MainController()));
-                    },
                   ),
                 )
               ],

@@ -8,12 +8,14 @@ import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_villains/villains/villains.dart';
 
-void main() => runApp(MaterialApp(
+void main() {
+  runApp(MaterialApp(
     navigatorObservers: [new VillainTransitionObserver()],
     theme: ThemeData(primarySwatch: Colors.blue),
     home: WelcomeScreen(),
     //home: MainController()
-    ));
+  ));
+}
 
 class MainController extends StatefulWidget {
   MainController({Key key}) : super(key: key);
@@ -78,7 +80,9 @@ class _MainControllerState extends State<MainController> {
               ),
             ],
           ),
-          SizedBox(width: 15,),
+          SizedBox(
+            width: 15,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
