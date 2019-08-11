@@ -9,15 +9,25 @@ List<WorkoutArea> workoutAreas = [
       title: 'Arms',
       description: 'Blahhhhhhhhh blahalhhh',
       workouts: [
-        Workout("General", Duration(seconds: 10), Difficulty.easy, [
-          Rest(Duration(seconds: 3)),
-          TimedSet('Push ups', Duration(seconds: 3)),
-          RepSet('Sit ups', 5)
-        ], 2),
-        Workout("General", Duration(seconds: 10), Difficulty.easy, [
-          Rest(Duration(seconds: 5)),
-          TimedSet('Push ups', Duration(seconds: 5))
-        ], 5)
+        Workout(
+            "General",
+            Duration(seconds: 10),
+            Difficulty.easy,
+            [
+              Rest(Duration(seconds: 3)),
+              TimedSet('Push ups', Duration(seconds: 3)),
+              RepSet('Sit ups', 5)
+            ],
+            2),
+        Workout(
+            "General",
+            Duration(seconds: 10),
+            Difficulty.easy,
+            [
+              Rest(Duration(seconds: 5)),
+              TimedSet('Push ups', Duration(seconds: 5))
+            ],
+            5)
       ],
       imagePath: 'assets/workout_cards/arm.png',
       gradientColors: [Colors.pink.shade200, Colors.redAccent.shade400],
@@ -26,14 +36,24 @@ List<WorkoutArea> workoutAreas = [
       title: 'Back',
       description: 'Blahhhhhhhhh blahalhhh',
       workouts: [
-        Workout("General", Duration(seconds: 10), Difficulty.easy, [
-          Rest(Duration(seconds: 5)),
-          TimedSet('Push ups', Duration(minutes: 1))
-        ], 1),
-        Workout("General", Duration(seconds: 10), Difficulty.easy, [
-          Rest(Duration(seconds: 5)),
-          TimedSet('Push ups', Duration(minutes: 1))
-        ], 6)
+        Workout(
+            "General",
+            Duration(seconds: 10),
+            Difficulty.easy,
+            [
+              Rest(Duration(seconds: 5)),
+              TimedSet('Push ups', Duration(minutes: 1))
+            ],
+            1),
+        Workout(
+            "General",
+            Duration(seconds: 10),
+            Difficulty.easy,
+            [
+              Rest(Duration(seconds: 5)),
+              TimedSet('Push ups', Duration(minutes: 1))
+            ],
+            6)
       ],
       imagePath: 'assets/workout_cards/back.png',
       gradientColors: [Colors.blue.shade400, Colors.lightBlue.shade200],
@@ -41,6 +61,7 @@ List<WorkoutArea> workoutAreas = [
 ];
 
 class WorkoutArea {
+  final int id;
   String title;
   String description;
   List<Workout> workouts;
@@ -49,7 +70,8 @@ class WorkoutArea {
   Experience experience;
 
   WorkoutArea(
-      {this.title,
+      {this.id,
+      this.title,
       this.description,
       this.workouts,
       this.imagePath,

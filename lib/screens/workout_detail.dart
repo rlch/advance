@@ -123,6 +123,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
             Navigator.pop(context);
           },
         ),
+        centerTitle: true,
         title: Hero(
             tag: "title-${widget.workoutArea.title}",
             child: Material(
@@ -152,7 +153,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Padding(
-                    padding: EdgeInsets.fromLTRB(32, appBar.preferredSize.height, 8, 0),
+                    padding: EdgeInsets.fromLTRB(
+                        32, appBar.preferredSize.height, 8, 0),
                     child: Villain(
                       villainAnimation: VillainAnimation.fromBottom(
                           relativeOffset: 0.2,
@@ -188,7 +190,9 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(height: screenHeight * 0.1,)
+                  SizedBox(
+                    height: screenHeight * 0.1,
+                  )
                 ],
               ),
             ),

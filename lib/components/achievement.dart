@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Achievement {
+  int id;
   String title;
   List<String> descriptions;
   List<int> goals;
@@ -9,7 +10,7 @@ class Achievement {
   int currentLevel;
   int currentGoalProgress;
 
-  Achievement({this.title, this.descriptions, this.goals, this.iconPath, this.gradientColors, this.currentLevel = 0, this.currentGoalProgress = 0});
+  Achievement({this.id, this.title, this.descriptions, this.goals, this.iconPath, this.gradientColors, this.currentLevel = 0, this.currentGoalProgress = 0});
 
   String description () {
     return descriptions[currentLevel];
@@ -21,6 +22,7 @@ class Achievement {
 
 List<Achievement> achievements = [
   Achievement(
+    id: 1,
     title: "Streak",
     descriptions: ["desc0", "desc1", "desc2", 'finsihed'],
     goals: [1, 2, 3],
@@ -30,6 +32,7 @@ List<Achievement> achievements = [
     currentGoalProgress: 0,
   ),
   Achievement(
+    id: 2,
     title: "Streak",
     descriptions: ["desc0", "desc1", "desc2", 'finsihed'],
     goals: [1, 2, 5],
