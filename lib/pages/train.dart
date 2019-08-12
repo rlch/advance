@@ -1,10 +1,12 @@
 import 'package:advance/components/scroll_behaviour.dart';
+import 'package:advance/components/user.dart';
 import 'package:advance/components/workout_area.dart';
 import 'package:advance/screens/workout_detail.dart';
 import 'package:advance/styleguide.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:provider/provider.dart';
 
 class Train extends StatefulWidget {
   Train({Key key}) : super(key: key);
@@ -47,6 +49,7 @@ class _TrainState extends State<Train> {
   Widget _buildCard(BuildContext context, WorkoutArea workoutArea) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    User user = Provider.of<User>(context);
 
     return InkWell(
       onTap: () {
@@ -129,11 +132,13 @@ class _TrainState extends State<Train> {
                         radius: 70,
                         lineWidth: 12,
                         animation: true,
-                        percent: workoutArea.experience.progress,
+                        percent:
+                            user.workouts[workoutArea.id].experience.progress,
                         circularStrokeCap: CircularStrokeCap.round,
                         progressColor: Colors.white,
                         center: Text(
-                          "${workoutArea.experience.level.toString()}",
+                          user.workouts[workoutArea.id].experience.level
+                              .toString(),
                           style: TextStyle(
                               fontFamily: 'WorkSans',
                               fontWeight: FontWeight.w800,

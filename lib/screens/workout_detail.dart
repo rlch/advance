@@ -1,4 +1,5 @@
 import 'package:advance/components/ui_elements_icons.dart';
+import 'package:advance/components/user.dart';
 import 'package:advance/components/workout.dart';
 import 'package:advance/components/workout_area.dart';
 import 'package:advance/screens/workout.dart';
@@ -6,6 +7,7 @@ import 'package:advance/styleguide.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_villains/villain.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:provider/provider.dart';
 
 class WorkoutDetailScreen extends StatefulWidget {
   final WorkoutArea workoutArea;
@@ -25,6 +27,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
   }
 
   Widget _buildWorkout(BuildContext context, Workout workout) {
+    User user = Provider.of<User>(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Container(
@@ -82,8 +85,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
               textColor: Colors.white,
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 22),
               onPressed: () {
-                if (workout.requiredLevel <
-                    widget.workoutArea.experience.level) {
+                if (workout.requiredLevel <=
+                    user.workouts[widget.workoutArea.id].experience.level) {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -91,8 +94,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                               workout, widget.workoutArea)));
                 }
               },
-              child: (workout.requiredLevel <
-                      widget.workoutArea.experience.level)
+              child: (workout.requiredLevel <=
+                      user.workouts[widget.workoutArea.id].experience.level)
                   ? Text(
                       'Train',
                       style: TextStyle(fontSize: 20, fontFamily: "WorkSans"),
@@ -109,6 +112,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    User user = Provider.of<User>(context);
     final screenHeight = MediaQuery.of(context).size.height;
 
     var appBar = AppBar(
@@ -207,11 +211,11 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                     radius: 70,
                     lineWidth: 12,
                     animation: false,
-                    percent: widget.workoutArea.experience.progress,
+                    percent: user.workouts[widget.workoutArea.id].experience.progress,
                     circularStrokeCap: CircularStrokeCap.round,
                     progressColor: Colors.white,
                     center: Text(
-                      widget.workoutArea.experience.level.toString(),
+                      user.workouts[widget.workoutArea.id].experience.level.toString(),
                       style: TextStyle(
                           fontFamily: 'WorkSans',
                           fontWeight: FontWeight.w800,

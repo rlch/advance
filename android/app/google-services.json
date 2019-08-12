@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "102441706265",
+    "firebase_url": "https://advance-72a11.firebaseio.com",
+    "project_id": "advance-72a11",
+    "storage_bucket": "advance-72a11.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:102441706265:android:9bf94e3bdf7ae653",
+        "android_client_info": {
+          "package_name": "com.example.advance"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "102441706265-u43ullp8j1l6onbulq7bktpmtk287lqh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoqMFBveEFfNE_hJ2pIwFVUv_u6I8Z0sw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "102441706265-u43ullp8j1l6onbulq7bktpmtk287lqh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "102441706265-3g0e5n74m9avgefrjnb6767opa12gtd2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.advance"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

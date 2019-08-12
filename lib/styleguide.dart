@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
+  static final ThemeData mainTheme = ThemeData(
+    scaffoldBackgroundColor: Colors.white,
+    primarySwatch: Colors.blue
+  );
+
   static final TextStyle welcomeTitle = TextStyle(
       fontWeight: FontWeight.w800,
       fontSize: 60,

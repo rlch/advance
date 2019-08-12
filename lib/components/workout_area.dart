@@ -2,62 +2,66 @@ import 'package:advance/components/exercise.dart';
 import 'package:advance/components/workout.dart';
 import 'package:flutter/material.dart';
 
-import 'experience.dart';
-
 List<WorkoutArea> workoutAreas = [
   WorkoutArea(
-      title: 'Arms',
-      description: 'Blahhhhhhhhh blahalhhh',
-      workouts: [
-        Workout(
-            "General",
-            Duration(seconds: 10),
-            Difficulty.easy,
-            [
-              Rest(Duration(seconds: 3)),
-              TimedSet('Push ups', Duration(seconds: 3)),
-              RepSet('Sit ups', 5)
-            ],
-            2),
-        Workout(
-            "General",
-            Duration(seconds: 10),
-            Difficulty.easy,
-            [
-              Rest(Duration(seconds: 5)),
-              TimedSet('Push ups', Duration(seconds: 5))
-            ],
-            5)
-      ],
-      imagePath: 'assets/workout_cards/arm.png',
-      gradientColors: [Colors.pink.shade200, Colors.redAccent.shade400],
-      experience: Experience(470)),
+    id: 1,
+    title: 'Arms',
+    description: 'Blahhhhhhhhh blahalhhh',
+    workouts: [
+      Workout(
+          1,
+          "General",
+          Duration(seconds: 10),
+          Difficulty.easy,
+          [
+            Rest(Duration(seconds: 3)),
+            TimedSet('Push ups', Duration(seconds: 3)),
+            RepSet('Sit ups', 5)
+          ],
+          1),
+      Workout(
+          2,
+          "General",
+          Duration(seconds: 10),
+          Difficulty.easy,
+          [
+            Rest(Duration(seconds: 5)),
+            TimedSet('Push ups', Duration(seconds: 5))
+          ],
+          5)
+    ],
+    imagePath: 'assets/workout_cards/arm.png',
+    gradientColors: [Colors.pink.shade200, Colors.redAccent.shade400],
+  ),
   WorkoutArea(
-      title: 'Back',
-      description: 'Blahhhhhhhhh blahalhhh',
-      workouts: [
-        Workout(
-            "General",
-            Duration(seconds: 10),
-            Difficulty.easy,
-            [
-              Rest(Duration(seconds: 5)),
-              TimedSet('Push ups', Duration(minutes: 1))
-            ],
-            1),
-        Workout(
-            "General",
-            Duration(seconds: 10),
-            Difficulty.easy,
-            [
-              Rest(Duration(seconds: 5)),
-              TimedSet('Push ups', Duration(minutes: 1))
-            ],
-            6)
-      ],
-      imagePath: 'assets/workout_cards/back.png',
-      gradientColors: [Colors.blue.shade400, Colors.lightBlue.shade200],
-      experience: Experience(900)),
+    id: 2,
+    title: 'Back',
+    description: 'Blahhhhhhhhh blahalhhh',
+    workouts: [
+      Workout(
+          4,
+          "General",
+          Duration(seconds: 10),
+          Difficulty.easy,
+          [
+            Rest(Duration(seconds: 5)),
+            TimedSet('Push ups', Duration(minutes: 1))
+          ],
+          1),
+      Workout(
+          5,
+          "General",
+          Duration(seconds: 10),
+          Difficulty.easy,
+          [
+            Rest(Duration(seconds: 5)),
+            TimedSet('Push ups', Duration(minutes: 1))
+          ],
+          6)
+    ],
+    imagePath: 'assets/workout_cards/back.png',
+    gradientColors: [Colors.blue.shade400, Colors.lightBlue.shade200],
+  ),
 ];
 
 class WorkoutArea {
@@ -67,7 +71,6 @@ class WorkoutArea {
   List<Workout> workouts;
   String imagePath;
   List<Color> gradientColors;
-  Experience experience;
 
   WorkoutArea(
       {this.id,
@@ -75,8 +78,7 @@ class WorkoutArea {
       this.description,
       this.workouts,
       this.imagePath,
-      this.gradientColors,
-      this.experience});
+      this.gradientColors});
 
   Color getButtonColor() {
     final red = (gradientColors[0].red + gradientColors[1].red) ~/ 2;

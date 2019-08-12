@@ -1,20 +1,52 @@
 import 'package:advance/components/ui_elements_icons.dart';
+import 'package:advance/firebase/user_service.dart';
 import 'package:advance/pages/achievements.dart';
 import 'package:advance/pages/progress.dart';
 import 'package:advance/pages/shop.dart';
 import 'package:advance/pages/train.dart';
 import 'package:advance/screens/welcome/welcome.dart';
+import 'package:advance/styleguide.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import 'components/user.dart';
+import 'firebase/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_villains/villains/villains.dart';
 
-void main() {
-  runApp(MaterialApp(
-    navigatorObservers: [new VillainTransitionObserver()],
-    theme: ThemeData(primarySwatch: Colors.blue),
-    home: WelcomeScreen(),
-    //home: MainController()
-  ));
+void main() async {
+  FirebaseAnalytics analytics = FirebaseAnalytics();
+  await signOut();
+  FirebaseUser user = await checkAuthStatus();
+
+  if (user == null) {
+    runApp(MaterialApp(
+      navigatorObservers: [
+        new VillainTransitionObserver(),
+        FirebaseAnalyticsObserver(analytics: analytics)
+      ],
+      theme: AppTheme.mainTheme,
+      home: WelcomeScreen(),
+    ));
+  } else {
+    runApp(
+      MultiProvider(
+          providers: [
+            StreamProvider<User>(
+                initialData: User.base(),
+                builder: (_) => UserService().streamUser(user)),
+          ],
+          child: MaterialApp(
+              navigatorObservers: [
+                new VillainTransitionObserver(),
+                FirebaseAnalyticsObserver(analytics: analytics)
+              ],
+              theme: AppTheme.mainTheme,
+              home: MainController())),
+    );
+  }
 }
 
 class MainController extends StatefulWidget {
@@ -56,6 +88,7 @@ class _MainControllerState extends State<MainController> {
 
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<User>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
@@ -71,7 +104,7 @@ class _MainControllerState extends State<MainController> {
                   onPressed: () {},
                   color: Colors.red),
               Text(
-                '1',
+                user.streak.current.toString(),
                 style: TextStyle(
                     fontFamily: 'WorkSans',
                     fontWeight: FontWeight.w800,
@@ -94,7 +127,7 @@ class _MainControllerState extends State<MainController> {
                 color: Colors.blue,
               ),
               Text(
-                '100',
+                user.energy.toString(),
                 style: TextStyle(
                     fontFamily: 'WorkSans',
                     fontWeight: FontWeight.w800,

@@ -160,10 +160,8 @@ class _ShopState extends State<Shop> {
     return ScrollConfiguration(
       behavior: BlankScrollBehaviour(),
       child: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            children: _buildShop(context),
-          ),
+        child: Column(
+          children: _buildShop(context),
         ),
       ),
     );
