@@ -18,30 +18,41 @@ import 'package:flutter_villains/villains/villains.dart';
 
 void main() async {
   FirebaseAnalytics analytics = FirebaseAnalytics();
-  FirebaseUser user = await checkAuthStatus();
+  FirebaseUser firebaseUser = await checkAuthStatus();
 
-  if (user == null) {
+  if (firebaseUser == null) {
     runApp(MaterialApp(
       navigatorObservers: [
         new VillainTransitionObserver(),
         FirebaseAnalyticsObserver(analytics: analytics)
       ],
-      theme: AppTheme.mainTheme,
+      theme: AppTheme.rootTheme,
       home: WelcomeScreen(),
     ));
   } else {
-    runApp(
-      MultiProvider(
-          providers: [
-            StreamProvider<User>(
-                initialData: User.base(),
-                builder: (_) => UserService().streamUser(user)),
-          ],
-          child: MaterialApp(navigatorObservers: [
-            new VillainTransitionObserver(),
-            FirebaseAnalyticsObserver(analytics: analytics)
-          ], theme: AppTheme.mainTheme, home: MainController())),
-    );
+    runApp(MultiProvider(providers: [
+      StreamProvider<User>(
+          initialData: User.base(),
+          builder: (_) => UserService().streamUser(firebaseUser)),
+    ], child: RootApp()));
+  }
+}
+
+class RootApp extends StatefulWidget {
+  RootApp({Key key}) : super(key: key);
+
+  @override
+  _RootAppState createState() => _RootAppState();
+}
+
+class _RootAppState extends State<RootApp> {
+  FirebaseAnalytics analytics = FirebaseAnalytics();
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(navigatorObservers: [
+      new VillainTransitionObserver(),
+      FirebaseAnalyticsObserver(analytics: analytics)
+    ], theme: Provider.of<User>(context).appTheme.mainTheme, home: MainController());
   }
 }
 
@@ -83,120 +94,137 @@ class _MainControllerState extends State<MainController> {
   @override
   Widget build(BuildContext context) {
     var user = Provider.of<User>(context);
+    var bubbleItems = <BubbleBottomBarItem>[
+      BubbleBottomBarItem(
+          backgroundColor: user.appTheme.themeColor.dark,
+          icon: Icon(
+            UiElements.home_active,
+            color: user.appTheme.iconGrey,
+          ),
+          activeIcon: Icon(
+            UiElements.home_active,
+            color: user.appTheme.themeColor.dark,
+          ),
+          title: Text("Home")),
+      BubbleBottomBarItem(
+          backgroundColor: user.appTheme.themeColor.dark,
+          icon: Icon(
+            UiElements.progress,
+            color: user.appTheme.iconGrey,
+          ),
+          activeIcon: Icon(
+            UiElements.progress,
+            color: user.appTheme.themeColor.dark,
+          ),
+          title: Text("Profile")),
+      BubbleBottomBarItem(
+          backgroundColor: user.appTheme.themeColor.dark,
+          icon: Icon(
+            UiElements.trophy_active,
+            color: user.appTheme.iconGrey,
+          ),
+          activeIcon: Icon(
+            UiElements.trophy_active,
+            color: user.appTheme.themeColor.dark,
+          ),
+          title: Text("Goals")),
+      BubbleBottomBarItem(
+          backgroundColor: user.appTheme.themeColor.dark,
+          icon: Icon(
+            UiElements.shop,
+            color: user.appTheme.iconGrey,
+          ),
+          activeIcon: Icon(
+            UiElements.shop,
+            color: user.appTheme.themeColor.dark,
+          ),
+          title: Text("Shop"))
+    ];
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
         backgroundColor: Colors.white,
-        actions: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
+        title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              IconButton(
-                  icon: Icon(UiElements.fire),
-                  tooltip: 'Streak',
-                  onPressed: () {},
-                  color: Colors.red),
-              Text(
-                user.streak.current.toString(),
-                style: TextStyle(
-                    fontFamily: 'WorkSans',
-                    fontWeight: FontWeight.w800,
-                    fontSize: 17,
-                    color: Colors.red),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  IconButton(
+                      icon: Icon(UiElements.fire),
+                      tooltip: 'Streak',
+                      onPressed: () {},
+                      color: Colors.red),
+                  Text(
+                    user.streak.current.toString(),
+                    style: TextStyle(
+                        fontFamily: 'WorkSans',
+                        fontWeight: FontWeight.w800,
+                        fontSize: 17,
+                        color: Colors.red),
+                  ),
+                ],
               ),
-            ],
-          ),
-          SizedBox(
-            width: 15,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              IconButton(
-                icon: Icon(UiElements.energy),
-                tooltip: 'Balance',
-                onPressed: () {},
-                color: Colors.blue,
+              SizedBox(
+                width: 15,
               ),
-              Text(
-                user.energy.toString(),
-                style: TextStyle(
-                    fontFamily: 'WorkSans',
-                    fontWeight: FontWeight.w800,
-                    fontSize: 15,
-                    color: Colors.blue),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(UiElements.energy),
+                    tooltip: 'Balance',
+                    onPressed: () {},
+                    color: Colors.blue,
+                  ),
+                  Text(
+                    user.energy.toString(),
+                    style: TextStyle(
+                        fontFamily: 'WorkSans',
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: Colors.blue),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(right: 15),
+                  )
+                ],
               ),
-              Padding(
-                padding: EdgeInsets.only(right: 15),
-              )
-            ],
-          ),
-        ],
+            ]),
       ),
-      /*floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.add),
-        backgroundColor: Colors.transparent,
+      floatingActionButton: Visibility(
+        visible: (currentPageIndex == 0),
+        child: FloatingActionButton(
+          backgroundColor: user.appTheme.themeColor.dark,
+          onPressed: () {},
+          child: Icon(Icons.add),
+        ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,*/
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 12.0),
-        child: BubbleBottomBar(
-          hasNotch: false,
-          hasInk: true,
-          opacity: .2,
-          currentIndex: currentPageIndex,
-          onTap: changePage,
-          elevation: 0,
-          items: <BubbleBottomBarItem>[
-            BubbleBottomBarItem(
-                backgroundColor: Colors.red,
-                icon: Icon(
-                  UiElements.home_active,
-                  color: Colors.red,
-                ),
-                activeIcon: Icon(
-                  UiElements.home_active,
-                  color: Colors.red,
-                ),
-                title: Text("Home")),
-            BubbleBottomBarItem(
-                backgroundColor: Colors.deepPurple,
-                icon: Icon(
-                  UiElements.progress,
-                  color: Colors.deepPurple,
-                ),
-                activeIcon: Icon(
-                  UiElements.progress,
-                  color: Colors.deepPurple,
-                ),
-                title: Text("Profile")),
-            BubbleBottomBarItem(
-                backgroundColor: Colors.orange,
-                icon: Icon(
-                  UiElements.trophy_active,
-                  color: Colors.orange,
-                ),
-                activeIcon: Icon(
-                  UiElements.trophy_active,
-                  color: Colors.orange,
-                ),
-                title: Text("Goals")),
-            BubbleBottomBarItem(
-                backgroundColor: Colors.green,
-                icon: Icon(
-                  UiElements.shop,
-                  color: Colors.green,
-                ),
-                activeIcon: Icon(
-                  UiElements.shop,
-                  color: Colors.green,
-                ),
-                title: Text("Shop"))
-          ],
-        ),
+        child: (currentPageIndex == 0)
+            ? BubbleBottomBar(
+                fabLocation: BubbleBottomBarFabLocation.end,
+                hasNotch: true,
+                hasInk: true,
+                opacity: .2,
+                currentIndex: currentPageIndex,
+                onTap: changePage,
+                elevation: 0,
+                items: bubbleItems,
+              )
+            : BubbleBottomBar(
+                hasNotch: true,
+                hasInk: true,
+                opacity: .2,
+                currentIndex: currentPageIndex,
+                onTap: changePage,
+                elevation: 0,
+                items: bubbleItems,
+              ),
       ),
       body: PageStorage(
         child: pages[currentPageIndex],

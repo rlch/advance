@@ -1,32 +1,74 @@
 import 'package:flutter/material.dart';
 
-AppTheme appTheme;
-
 final List<ThemeColor> themeColors = [
-  ThemeColor(Colors.deepPurple[400], Color(0xb085f5), Color(0x4d2c91)),
-  ThemeColor(Colors.pink[200], Color(0xffc1e3), Color(0xbf5f82),
+  ThemeColor(Colors.pink, Color(0xffec407a), Colors.pink.shade200,
+      Colors.redAccent.shade400),
+  ThemeColor(
+      Colors.purple, Color(0xffB06AB3), Color(0xff4568DC), Color(0xffB06AB3)),
+  ThemeColor(
+      Colors.red, Color(0xffcb2d3e), Color(0xffef473a), Color(0xffcb2d3e)),
+  ThemeColor(Colors.deepPurple, Colors.deepPurple[400], Color(0xffb085f5),
+      Color(0xff4d2c91)),
+  ThemeColor(Colors.lightBlue, Color(0xff65C7F7), Color(0xff9CECFB),
+      Color(0xff0052D4)),
+  ThemeColor(Colors.green, Colors.green, Color(0xff80e27e), Color(0xff087f23)),
+  ThemeColor(
+      Colors.orange, Color(0xffff7e5f), Color(0xfffeb47b), Color(0xffff7e5f),
       darkText: true),
-  ThemeColor(Colors.pink[400], Color(0xff77a9), Color(0xb4004e)),
-  ThemeColor(Colors.indigo[700], Color(0x666ad1), Color(0x001970)),
-  ThemeColor(Colors.lightBlue, Color(0x039be5), Color(0x006db3)),
-  ThemeColor(Colors.green, Color(0x80e27e), Color(0x087f23)),
-  ThemeColor(Colors.amber[700], Color(0xffd149), Color(0xc67100),
-      darkText: true),
-  ThemeColor(Colors.blueGrey[800], Color(0x62727b), Color(0x102027))
+  ThemeColor(
+      Colors.pink, Color(0xffff5f6d), Color(0xffffc371), Color(0xffff5f6d))
 ];
 
 class ThemeColor {
+  final MaterialColor swatch;
   final Color primary, light, dark;
   final bool darkText;
-  ThemeColor(this.primary, this.light, this.dark, {this.darkText = false});
+  ThemeColor(this.swatch, this.primary, this.light, this.dark,
+      {this.darkText = false});
 }
 
 class AppTheme {
   final ThemeColor themeColor;
-  AppTheme({this.themeColor});
+  AppTheme(this.themeColor);
 
-  static final ThemeData mainTheme = ThemeData(
-      scaffoldBackgroundColor: Colors.white, primarySwatch: Colors.blue);
+  List<Color> get gradientColors {
+    return [themeColor.light, themeColor.dark];
+  }
+
+  final Color iconGrey = Colors.black.withOpacity(0.3);
+
+  final Color circleDark = Colors.black.withAlpha(50);
+
+  ThemeData get mainTheme {
+    return ThemeData(
+        primaryColor: themeColor.primary,
+        accentColor: themeColor.dark,
+        fontFamily: "WorkSans",
+        textTheme: TextTheme(
+            headline: TextStyle(color: Colors.white,
+                fontSize: 34, letterSpacing: 1.2, fontWeight: FontWeight.w900),
+            subhead: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 24,
+            )),
+        scaffoldBackgroundColor: Colors.white,
+        primarySwatch: themeColor.swatch);
+  }
+
+  static final ThemeData rootTheme = ThemeData(
+      brightness: Brightness.dark,
+      primaryColor: Color(0xffec407a),
+      accentColor: Colors.redAccent.shade400,
+      fontFamily: "WorkSans",
+      textTheme: TextTheme(
+          headline: TextStyle(
+              fontSize: 34, letterSpacing: 1.2, fontWeight: FontWeight.w900),
+          subhead: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 24,
+          )),
+      scaffoldBackgroundColor: Colors.white,
+      primarySwatch: Colors.pink[400]);
 
   static final TextStyle welcomeTitle = TextStyle(
       fontWeight: FontWeight.w800,

@@ -4,11 +4,10 @@ import 'package:advance/firebase/user_service.dart';
 import 'package:advance/main.dart';
 import 'package:advance/styleguide.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_villains/villain.dart';
+import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:provider/provider.dart';
 
 class SignUpFormScreen extends StatefulWidget {
@@ -28,6 +27,17 @@ class _SignUpFormScreenState extends State<SignUpFormScreen> {
   String _passwordValidator;
 
   bool _isLoading = false;
+  bool _keyboardVisible = false;
+
+  @override
+  void initState() {
+    KeyboardVisibilityNotification().addNewListener(
+      onChange: (bool visible) {
+        _keyboardVisible = visible;
+      },
+    );
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,26 +55,29 @@ class _SignUpFormScreenState extends State<SignUpFormScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Padding(
-                    padding: const EdgeInsets.only(top: 80),
-                    child: Column(
-                      children: <Widget>[
-                        Hero(
-                          tag: 'welcome_title',
-                          child: Text(
-                            "Advance",
-                            style: AppTheme.welcomeTitle,
+                Visibility(
+                  visible: !_keyboardVisible,
+                  child: Padding(
+                      padding: const EdgeInsets.only(top: 80),
+                      child: Column(
+                        children: <Widget>[
+                          Hero(
+                            tag: 'welcome_title',
+                            child: Text(
+                              "Advance",
+                              style: AppTheme.welcomeTitle,
+                            ),
                           ),
-                        ),
-                        Hero(
-                          tag: 'welcome_description',
-                          child: Text(
-                            "Fitness can be fun.",
-                            style: AppTheme.welcomeDescription,
-                          ),
-                        )
-                      ],
-                    )),
+                          Hero(
+                            tag: 'welcome_description',
+                            child: Text(
+                              "Fitness can be fun.",
+                              style: AppTheme.welcomeDescription,
+                            ),
+                          )
+                        ],
+                      )),
+                ),
                 Villain(
                   villainAnimation: VillainAnimation.fade(),
                   child: Column(
@@ -194,25 +207,13 @@ class _SignUpFormScreenState extends State<SignUpFormScreen> {
                                 final firebaseUser = await signUpWithEmail(
                                     _emailController.text.trim(),
                                     _passwordController.text);
-                                FirebaseAnalytics analytics =
-                                    FirebaseAnalytics();
-                                runApp(
-                                  MultiProvider(
-                                      providers: [
-                                        StreamProvider<User>(
-                                            initialData: User.base(),
-                                            builder: (_) => UserService()
-                                                .streamUser(firebaseUser)),
-                                      ],
-                                      child: MaterialApp(
-                                          navigatorObservers: [
-                                            new VillainTransitionObserver(),
-                                            FirebaseAnalyticsObserver(
-                                                analytics: analytics)
-                                          ],
-                                          theme: AppTheme.mainTheme,
-                                          home: MainController())),
-                                );
+                                FocusScope.of(context).unfocus();
+                                runApp(MultiProvider(providers: [
+                                  StreamProvider<User>(
+                                      initialData: User.base(),
+                                      builder: (_) => UserService()
+                                          .streamUser(firebaseUser)),
+                                ], child: RootApp()));
                               } catch (error) {
                                 switch ((error as PlatformException).code) {
                                   case 'ERROR_INVALID_EMAIL':

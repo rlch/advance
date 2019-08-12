@@ -81,7 +81,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
               ),
             ),
             RaisedButton(
-              color: widget.workoutArea.getButtonColor(),
+              color: user.appTheme.themeColor.primary,
               textColor: Colors.white,
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 22),
               onPressed: () {
@@ -122,7 +122,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
         leading: IconButton(
           iconSize: 40,
           icon: Icon(Icons.close),
-          color: Colors.white.withOpacity(0.9),
+          color: Colors.white,
           onPressed: () {
             Navigator.pop(context);
           },
@@ -136,96 +136,102 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                     child: Text(widget.workoutArea.title,
                         style: AppTheme.heading)))));
 
-    return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Hero(
-              tag: "background-${widget.workoutArea.title}",
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        colors: widget.workoutArea.gradientColors,
-                        begin: Alignment.topRight,
-                        end: Alignment.bottomLeft)),
-              )),
-          appBar,
-          SafeArea(
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(
-                        32, appBar.preferredSize.height, 8, 0),
-                    child: Villain(
-                      villainAnimation: VillainAnimation.fromBottom(
-                          relativeOffset: 0.2,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        body: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            Hero(
+                tag: "background-${widget.workoutArea.title}",
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          colors: user.appTheme.gradientColors,
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft)),
+                )),
+            appBar,
+            SafeArea(
+              child: Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(
+                          32, appBar.preferredSize.height, 8, 0),
+                      child: Villain(
+                        villainAnimation: VillainAnimation.fromBottom(
+                            relativeOffset: 0.2,
+                            from: Duration(milliseconds: 100),
+                            to: Duration(milliseconds: 500)),
+                        secondaryVillainAnimation: VillainAnimation.fade(),
+                        animateExit: true,
+                        child: Center(
+                          child: Text(widget.workoutArea.description,
+                              style: TextStyle(
+                                  fontFamily: "WorkSans",
+                                  fontSize: 20,
+                                  color: Colors.white)),
+                        ),
+                      ),
+                    ),
+                    Villain(
+                      villainAnimation: VillainAnimation.scale(
+                          fromScale: 0.5,
+                          toScale: 1,
                           from: Duration(milliseconds: 100),
-                          to: Duration(milliseconds: 500)),
+                          to: Duration(milliseconds: 300)),
                       secondaryVillainAnimation: VillainAnimation.fade(),
-                      animateExit: true,
-                      child: Center(
-                        child: Text(widget.workoutArea.description,
-                            style: TextStyle(
-                                fontFamily: "WorkSans",
-                                fontSize: 20,
-                                color: Colors.white)),
+                      child: SizedBox(
+                        height: screenHeight * 0.45,
+                        child: PageView.builder(
+                          controller: _pageController,
+                          itemCount: widget.workoutArea.workouts.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return _buildWorkout(
+                                context, widget.workoutArea.workouts[index]);
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                  Villain(
-                    villainAnimation: VillainAnimation.scale(
-                        fromScale: 0.5,
-                        toScale: 1,
-                        from: Duration(milliseconds: 100),
-                        to: Duration(milliseconds: 300)),
-                    secondaryVillainAnimation: VillainAnimation.fade(),
-                    child: SizedBox(
-                      height: screenHeight * 0.45,
-                      child: PageView.builder(
-                        controller: _pageController,
-                        itemCount: widget.workoutArea.workouts.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return _buildWorkout(
-                              context, widget.workoutArea.workouts[index]);
-                        },
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: screenHeight * 0.1,
-                  )
-                ],
+                    SizedBox(
+                      height: screenHeight * 0.1,
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: Hero(
-                  tag: 'fab-${widget.workoutArea.title}',
-                  child: CircularPercentIndicator(
-                    radius: 70,
-                    lineWidth: 12,
-                    animation: false,
-                    percent: user.workouts[widget.workoutArea.id].experience.progress,
-                    circularStrokeCap: CircularStrokeCap.round,
-                    progressColor: Colors.white,
-                    center: Text(
-                      user.workouts[widget.workoutArea.id].experience.level.toString(),
-                      style: TextStyle(
-                          fontFamily: 'WorkSans',
-                          fontWeight: FontWeight.w800,
-                          fontSize: 17,
-                          color: Colors.white),
-                    ),
-                  )),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: Hero(
+                    tag: 'fab-${widget.workoutArea.title}',
+                    child: CircularPercentIndicator(
+                      radius: 70,
+                      lineWidth: 12,
+                      animation: false,
+                      percent: user
+                          .workouts[widget.workoutArea.id].experience.progress,
+                      circularStrokeCap: CircularStrokeCap.round,
+                      progressColor: Colors.white,
+                      backgroundColor: user.appTheme.circleDark,
+                      center: Text(
+                        user.workouts[widget.workoutArea.id].experience.level
+                            .toString(),
+                        style: TextStyle(
+                            fontFamily: 'WorkSans',
+                            fontWeight: FontWeight.w800,
+                            fontSize: 17,
+                            color: Colors.white),
+                      ),
+                    )),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

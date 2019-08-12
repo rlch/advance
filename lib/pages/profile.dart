@@ -1,5 +1,8 @@
+import 'package:advance/components/user.dart';
+import 'package:advance/firebase/user_service.dart';
 import 'package:advance/styleguide.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -9,6 +12,7 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
+    User user = Provider.of<User>(context);
     final screenWidth = MediaQuery.of(context).size.width;
     return DefaultTabController(
       length: 2,
@@ -41,6 +45,9 @@ class _ProfileState extends State<Profile> {
                             .map((colors) => Center(
                                   child: RawMaterialButton(
                                     onPressed: () {
+                                      UserService().changeThemeColor(
+                                          user.firebaseUser.uid,
+                                          themeColors.indexOf(colors));
                                     },
                                     fillColor: colors.primary,
                                     shape: CircleBorder(),
@@ -55,9 +62,7 @@ class _ProfileState extends State<Profile> {
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.endFloat,
               floatingActionButton: FloatingActionButton.extended(
-                onPressed: () {},
-                label: Text('Add Friend')
-              ),
+                  onPressed: () {}, label: Text('Add Friend')),
             )
           ],
         ),

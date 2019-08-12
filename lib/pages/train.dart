@@ -73,7 +73,7 @@ class _TrainState extends State<Train> {
                     width: 0.85 * screenWidth,
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
-                            colors: workoutArea.gradientColors,
+                            colors: user.appTheme.gradientColors,
                             begin: Alignment.topRight,
                             end: Alignment.bottomLeft),
                         borderRadius: BorderRadius.all(Radius.circular(20))),
@@ -113,7 +113,7 @@ class _TrainState extends State<Train> {
                               child: AutoSizeText(
                                 workoutArea.title,
                                 maxLines: 1,
-                                style: AppTheme.heading,
+                                style: Theme.of(context).textTheme.headline,
                               ),
                             ),
                           ),
@@ -136,6 +136,7 @@ class _TrainState extends State<Train> {
                             user.workouts[workoutArea.id].experience.progress,
                         circularStrokeCap: CircularStrokeCap.round,
                         progressColor: Colors.white,
+                        backgroundColor: user.appTheme.circleDark,
                         center: Text(
                           user.workouts[workoutArea.id].experience.level
                               .toString(),

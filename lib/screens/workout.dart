@@ -1,8 +1,10 @@
+import 'package:advance/components/user.dart';
 import 'package:advance/components/workout.dart';
 import 'package:advance/screens/rest.dart';
 import 'package:advance/screens/timed_set.dart';
 import 'package:advance/screens/workout_results_level.dart';
 import 'package:advance/screens/workout_results_streak.dart';
+import 'package:provider/provider.dart';
 import 'package:quiver/async.dart';
 
 import 'package:advance/bloc/bloc.dart';
@@ -76,6 +78,7 @@ class _WorkoutCountdownScreenState extends State<WorkoutCountdownScreen>
 
   @override
   Widget build(BuildContext context) {
+    User user = Provider.of<User>(context);
     return Scaffold(
         body: Stack(
       fit: StackFit.expand,
@@ -85,7 +88,7 @@ class _WorkoutCountdownScreenState extends State<WorkoutCountdownScreen>
             child: DecoratedBox(
               decoration: BoxDecoration(
                   gradient: LinearGradient(
-                      colors: widget.workoutArea.gradientColors,
+                      colors: user.appTheme.gradientColors,
                       begin: Alignment.topRight,
                       end: Alignment.bottomLeft)),
             )),
@@ -135,74 +138,78 @@ class _WorkoutScreenState extends State<WorkoutScreen>
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<WorkoutBloc>.value(
-      value: _workoutBloc,
-      child: BlocListener(
-          bloc: _workoutBloc,
-          listener: (listenerContext, state) async {
-            if (state is RunningTimedSet) {
-              await Navigator.push(
-                  listenerContext,
-                  PageRouteBuilder(
-                      pageBuilder: (listenerContext, _, __) => TimedSetScreen(
-                            timedSet: state.timedSet,
-                            workoutArea: widget.workoutArea,
-                          ))).then((result) => result
-                  ? _workoutBloc.dispatch(FinishWorkoutStep())
-                  : print("closed"));
-            } else if (state is RunningRepSet) {
-              await Navigator.push(
-                  listenerContext,
-                  PageRouteBuilder(
-                      pageBuilder: (listenerContext, _, __) => RepSetScreen(
-                          repSet: state.repSet,
-                          workoutArea: widget.workoutArea))).then((result) =>
-                  result
-                      ? _workoutBloc.dispatch(FinishWorkoutStep())
-                      : print("closed"));
-            } else if (state is RunningRest) {
-              await Navigator.push(
-                  listenerContext,
-                  PageRouteBuilder(
-                      pageBuilder: (listenerContext, _, __) => RestScreen(
-                            rest: state.rest,
-                            workoutArea: widget.workoutArea,
-                          ))).then((result) => result
-                  ? _workoutBloc.dispatch(FinishWorkoutStep())
-                  : print("closed"));
-            } else if (state is FinishedWorkout) {
-              await Navigator.push(
-                  listenerContext,
-                  PageRouteBuilder(
-                      pageBuilder: (listenerContext, _, __) =>
-                          WorkoutResultsStreakScreen(
+    User user = Provider.of<User>(context);
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: BlocProvider<WorkoutBloc>.value(
+        value: _workoutBloc,
+        child: BlocListener(
+            bloc: _workoutBloc,
+            listener: (listenerContext, state) async {
+              if (state is RunningTimedSet) {
+                await Navigator.push(
+                    listenerContext,
+                    PageRouteBuilder(
+                        pageBuilder: (listenerContext, _, __) => TimedSetScreen(
+                              timedSet: state.timedSet,
                               workoutArea: widget.workoutArea,
-                              workout: widget.workout)));
-              await Navigator.push(
-                  listenerContext,
-                  PageRouteBuilder(
-                      pageBuilder: (listenerContext, _, __) =>
-                          WorkoutResultsLevelScreen(
+                            ))).then((result) => result
+                    ? _workoutBloc.dispatch(FinishWorkoutStep())
+                    : Navigator.of(context).pop(false));
+              } else if (state is RunningRepSet) {
+                await Navigator.push(
+                    listenerContext,
+                    PageRouteBuilder(
+                        pageBuilder: (listenerContext, _, __) => RepSetScreen(
+                            repSet: state.repSet,
+                            workoutArea: widget.workoutArea))).then((result) =>
+                    result
+                        ? _workoutBloc.dispatch(FinishWorkoutStep())
+                        : Navigator.of(context).pop(false));
+              } else if (state is RunningRest) {
+                await Navigator.push(
+                    listenerContext,
+                    PageRouteBuilder(
+                        pageBuilder: (listenerContext, _, __) => RestScreen(
+                              rest: state.rest,
                               workoutArea: widget.workoutArea,
-                              workout: widget.workout)));
-              Navigator.of(context).pop(false);
-            }
-          },
-          child: Scaffold(
-              body: Stack(
-            fit: StackFit.expand,
-            children: <Widget>[
-              Hero(
-                  tag: "background-${widget.workoutArea.title}",
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                            colors: widget.workoutArea.gradientColors,
-                            begin: Alignment.topRight,
-                            end: Alignment.bottomLeft)),
-                  )),
-            ],
-          ))),
+                            ))).then((result) => result
+                    ? _workoutBloc.dispatch(FinishWorkoutStep())
+                    : Navigator.of(context).pop(false));
+              } else if (state is FinishedWorkout) {
+                await Navigator.push(
+                    listenerContext,
+                    PageRouteBuilder(
+                        pageBuilder: (listenerContext, _, __) =>
+                            WorkoutResultsStreakScreen(
+                                workoutArea: widget.workoutArea,
+                                workout: widget.workout)));
+                await Navigator.push(
+                    listenerContext,
+                    PageRouteBuilder(
+                        pageBuilder: (listenerContext, _, __) =>
+                            WorkoutResultsLevelScreen(
+                                workoutArea: widget.workoutArea,
+                                workout: widget.workout)));
+                Navigator.of(context).pop();
+              }
+            },
+            child: Scaffold(
+                body: Stack(
+              fit: StackFit.expand,
+              children: <Widget>[
+                Hero(
+                    tag: "background-${widget.workoutArea.title}",
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                              colors: user.appTheme.gradientColors,
+                              begin: Alignment.topRight,
+                              end: Alignment.bottomLeft)),
+                    )),
+              ],
+            ))),
+      ),
     );
   }
 }

@@ -1,7 +1,9 @@
 import 'package:advance/components/achievement.dart';
 import 'package:advance/components/scroll_behaviour.dart';
+import 'package:advance/components/user.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:provider/provider.dart';
 
 class Achievements extends StatefulWidget {
   Achievements({Key key}) : super(key: key);
@@ -14,7 +16,7 @@ class _AchievementsState extends State<Achievements> {
   List<Widget> _buildStars(int currentLevel) {
     List<Widget> stars = [];
     for (var i = 0; i < currentLevel; i += 1) {
-      stars.add(Icon(Icons.star, color: Colors.yellow));
+      stars.add(Icon(Icons.star, color: Colors.white));
     }
     for (var i = 0; i < 3 - currentLevel; i += 1) {
       stars.add(Icon(
@@ -28,6 +30,7 @@ class _AchievementsState extends State<Achievements> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    User user = Provider.of<User>(context);
     return ScrollConfiguration(
       behavior: BlankScrollBehaviour(),
       child: Container(
@@ -44,7 +47,7 @@ class _AchievementsState extends State<Achievements> {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
-                              colors: achievement.gradientColors,
+                              colors: user.appTheme.gradientColors,
                               begin: Alignment.topRight,
                               end: Alignment.bottomLeft),
                           borderRadius: BorderRadius.circular(12)),
@@ -61,7 +64,7 @@ class _AchievementsState extends State<Achievements> {
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: _buildStars(achievement.currentLevel),
+                              children: _buildStars(user.achievements[achievement.id].level),
                             )
                           ],
                         ),
@@ -100,18 +103,18 @@ class _AchievementsState extends State<Achievements> {
                                 Expanded(
                                   child: LinearPercentIndicator(
                                     lineHeight: 18,
-                                    percent: achievement.currentGoalProgress /
+                                    percent: user.achievements[achievement.id].progress + 0.2 /
                                         achievement.goal(),
                                     backgroundColor:
-                                        Colors.black.withOpacity(0.2),
-                                    progressColor: Colors.blue,
+                                        Colors.black.withOpacity(0.1),
+                                    progressColor: user.appTheme.themeColor.light,
                                   ),
                                 ),
                                 SizedBox(
                                   width: 15,
                                 ),
                                 Text(
-                                  achievement.currentGoalProgress.toString() +
+                                  user.achievements[achievement.id].progress.toString() +
                                       "/" +
                                       achievement.goal().toString(),
                                   style: TextStyle(

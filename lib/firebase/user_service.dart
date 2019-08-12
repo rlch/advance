@@ -37,4 +37,10 @@ class UserService {
       'color': 0,
     });
   }
+
+  Future<void> changeThemeColor(String uid, int colorIndex) async {
+    await Firestore.instance.collection('users').document(uid).updateData({
+      'color': colorIndex
+    });
+  }
 }

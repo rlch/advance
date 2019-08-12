@@ -11,10 +11,10 @@ class User {
   Map<int, UserAchievement> achievements;
   Map<int, UserWorkout> workouts;
   UserStreak streak;
-  ThemeColor themeColor;
+  AppTheme appTheme;
 
   User(this.firebaseUser, this.energy, this.achievements, this.workouts,
-      this.streak, this.themeColor);
+      this.streak, this.appTheme);
 
   factory User.base() {
     return User(
@@ -31,15 +31,15 @@ class User {
                     key: (workout) => (workout as Workout).id,
                     value: (_) => UserExercise(0)))),
         UserStreak(0, 0),
-        themeColors[0]);
+        AppTheme(themeColors[0]));
   }
 
   factory User.fromMap(FirebaseUser firebaseUser, Map data) {
-    appTheme = AppTheme(themeColor: themeColors[data['color']]);
-
     Map<int, UserAchievement> _achievements = {};
     Map<int, UserWorkout> _workouts = {};
     List<UserStreakHistory> _history = [];
+
+    print(AppTheme(themeColors[data['color']]).themeColor.light);
 
     for (final achievement
         in (data['achievements'] as Map<dynamic, dynamic>).entries) {
@@ -69,7 +69,7 @@ class User {
         _workouts,
         UserStreak(data['streak']['current'], data['streak']['record'],
             history: _history),
-        themeColors[data['color']]);
+        AppTheme(themeColors[data['color']]));
   }
 }
 
