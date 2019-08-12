@@ -157,6 +157,8 @@ class _TrainState extends State<Train> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(child: Center(child: _buildSlider(context)));
+    return SafeArea(
+      child: Center(child: _buildSlider(context)),
+    );
   }
 }

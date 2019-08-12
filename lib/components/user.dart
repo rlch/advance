@@ -2,6 +2,7 @@ import 'package:advance/components/achievement.dart' as prefix0;
 import 'package:advance/components/experience.dart';
 import 'package:advance/components/workout.dart';
 import 'package:advance/components/workout_area.dart';
+import 'package:advance/styleguide.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class User {
@@ -10,29 +11,32 @@ class User {
   Map<int, UserAchievement> achievements;
   Map<int, UserWorkout> workouts;
   UserStreak streak;
+  ThemeColor themeColor;
 
   User(this.firebaseUser, this.energy, this.achievements, this.workouts,
-      this.streak);
+      this.streak, this.themeColor);
 
   factory User.base() {
     return User(
-      null,
-      0,
-      Map.fromIterable(prefix0.achievements,
-          key: (achievement) => (achievement as prefix0.Achievement).id,
-          value: (_) => UserAchievement(0, 0)),
-      Map.fromIterable(workoutAreas,
-          key: (area) => (area as WorkoutArea).id,
-          value: (area) => UserWorkout(
-              Experience(0),
-              Map.fromIterable((area as WorkoutArea).workouts,
-                  key: (workout) => (workout as Workout).id,
-                  value: (_) => UserExercise(0)))),
-      UserStreak(0, 0),
-    );
+        null,
+        0,
+        Map.fromIterable(prefix0.achievements,
+            key: (achievement) => (achievement as prefix0.Achievement).id,
+            value: (_) => UserAchievement(0, 0)),
+        Map.fromIterable(workoutAreas,
+            key: (area) => (area as WorkoutArea).id,
+            value: (area) => UserWorkout(
+                Experience(0),
+                Map.fromIterable((area as WorkoutArea).workouts,
+                    key: (workout) => (workout as Workout).id,
+                    value: (_) => UserExercise(0)))),
+        UserStreak(0, 0),
+        themeColors[0]);
   }
 
   factory User.fromMap(FirebaseUser firebaseUser, Map data) {
+    appTheme = AppTheme(themeColor: themeColors[data['color']]);
+
     Map<int, UserAchievement> _achievements = {};
     Map<int, UserWorkout> _workouts = {};
     List<UserStreakHistory> _history = [];
@@ -64,7 +68,8 @@ class User {
         _achievements,
         _workouts,
         UserStreak(data['streak']['current'], data['streak']['record'],
-            history: _history));
+            history: _history),
+        themeColors[data['color']]);
   }
 }
 

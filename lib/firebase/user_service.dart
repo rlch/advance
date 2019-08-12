@@ -33,7 +33,8 @@ class UserService {
                     value: (workout) =>
                         {'times_completed': 0}),
                 'experience': 0
-              })
+              }),
+      'color': 0,
     });
   }
 }

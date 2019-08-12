@@ -6,8 +6,8 @@ import 'package:advance/styleguide.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_villains/villain.dart';
 import 'package:provider/provider.dart';
 
@@ -25,6 +25,9 @@ class _SignUpFormScreenState extends State<SignUpFormScreen> {
   final _passwordController = TextEditingController();
 
   String _emailValidator;
+  String _passwordValidator;
+
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -123,6 +126,8 @@ class _SignUpFormScreenState extends State<SignUpFormScreen> {
                             validator: (value) {
                               if (value.length < 6) {
                                 return 'The password must be 6 characters long or more.';
+                              } else if (_passwordValidator != null) {
+                                return _passwordValidator;
                               }
                               return null;
                             },
@@ -165,49 +170,80 @@ class _SignUpFormScreenState extends State<SignUpFormScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.check,
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                    onPressed: () async {
-                      if (_emailKey.currentState.validate() &&
-                          _passwordKey.currentState.validate()) {
-                        final FirebaseUser signupResponse =
-                            await signUpWithEmail(_emailController.text.trim(),
-                                _passwordController.text);
-
-                        if (signupResponse != null) {
-                          FirebaseAnalytics analytics = FirebaseAnalytics();
-                          runApp(
-                            MultiProvider(
-                                providers: [
-                                  StreamProvider<User>(
-                                      initialData: User.base(),
-                                      builder: (_) => UserService()
-                                          .streamUser(signupResponse)),
-                                ],
-                                child: MaterialApp(
-                                    navigatorObservers: [
-                                      new VillainTransitionObserver(),
-                                      FirebaseAnalyticsObserver(
-                                          analytics: analytics)
-                                    ],
-                                    theme:
-                                        AppTheme.mainTheme,
-                                    home: MainController())),
-                          );
-                        } else {
-                          setState(() {
-                            _emailValidator = 'Email in use.';
-                            _emailKey.currentState.validate();
-                            _emailValidator = null;
-                          });
-                        }
-                      }
-                    },
-                  ),
+                  child: _isLoading
+                      ? SizedBox(
+                          height: 40,
+                          width: 40,
+                          child: CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ))
+                      : IconButton(
+                          icon: Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          onPressed: () async {
+                            setState(() {
+                              _isLoading = true;
+                            });
+                            if (_emailKey.currentState.validate() &&
+                                _passwordKey.currentState.validate()) {
+                              try {
+                                final firebaseUser = await signUpWithEmail(
+                                    _emailController.text.trim(),
+                                    _passwordController.text);
+                                FirebaseAnalytics analytics =
+                                    FirebaseAnalytics();
+                                runApp(
+                                  MultiProvider(
+                                      providers: [
+                                        StreamProvider<User>(
+                                            initialData: User.base(),
+                                            builder: (_) => UserService()
+                                                .streamUser(firebaseUser)),
+                                      ],
+                                      child: MaterialApp(
+                                          navigatorObservers: [
+                                            new VillainTransitionObserver(),
+                                            FirebaseAnalyticsObserver(
+                                                analytics: analytics)
+                                          ],
+                                          theme: AppTheme.mainTheme,
+                                          home: MainController())),
+                                );
+                              } catch (error) {
+                                switch ((error as PlatformException).code) {
+                                  case 'ERROR_INVALID_EMAIL':
+                                    setState(() {
+                                      _emailValidator = 'Email malformed.';
+                                      _emailKey.currentState.validate();
+                                      _emailValidator = null;
+                                    });
+                                    break;
+                                  case 'ERROR_EMAIL_ALREADY_IN_USE':
+                                    setState(() {
+                                      _emailValidator = 'Email in use.';
+                                      _emailKey.currentState.validate();
+                                      _emailValidator = null;
+                                    });
+                                    break;
+                                  case 'ERROR_WEAK_PASSWORD':
+                                    setState(() {
+                                      _passwordValidator = 'Weak password.';
+                                      _passwordKey.currentState.validate();
+                                      _passwordValidator = null;
+                                    });
+                                    break;
+                                }
+                              }
+                            }
+                            setState(() {
+                              _isLoading = false;
+                            });
+                          },
+                        ),
                 )
               ],
             ),

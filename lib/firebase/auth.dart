@@ -14,15 +14,11 @@ Future<FirebaseUser> signInWithEmail(String email, String password) async {
 }
 
 Future<FirebaseUser> signUpWithEmail(String email, String password) async {
-  try {
-    final user = (await _auth.createUserWithEmailAndPassword(
-            email: email, password: password))
-        .user;
-    await UserService().createUser(user.uid);
-    return user;
-  } catch (_) {
-    return null;
-  }
+  final user = (await _auth.createUserWithEmailAndPassword(
+          email: email, password: password))
+      .user;
+  await UserService().createUser(user.uid);
+  return user;
 }
 
 Future<void> signOut() async {

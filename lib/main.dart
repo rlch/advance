@@ -1,7 +1,7 @@
 import 'package:advance/components/ui_elements_icons.dart';
 import 'package:advance/firebase/user_service.dart';
 import 'package:advance/pages/achievements.dart';
-import 'package:advance/pages/progress.dart';
+import 'package:advance/pages/profile.dart';
 import 'package:advance/pages/shop.dart';
 import 'package:advance/pages/train.dart';
 import 'package:advance/screens/welcome/welcome.dart';
@@ -18,7 +18,6 @@ import 'package:flutter_villains/villains/villains.dart';
 
 void main() async {
   FirebaseAnalytics analytics = FirebaseAnalytics();
-  await signOut();
   FirebaseUser user = await checkAuthStatus();
 
   if (user == null) {
@@ -38,13 +37,10 @@ void main() async {
                 initialData: User.base(),
                 builder: (_) => UserService().streamUser(user)),
           ],
-          child: MaterialApp(
-              navigatorObservers: [
-                new VillainTransitionObserver(),
-                FirebaseAnalyticsObserver(analytics: analytics)
-              ],
-              theme: AppTheme.mainTheme,
-              home: MainController())),
+          child: MaterialApp(navigatorObservers: [
+            new VillainTransitionObserver(),
+            FirebaseAnalyticsObserver(analytics: analytics)
+          ], theme: AppTheme.mainTheme, home: MainController())),
     );
   }
 }
@@ -63,9 +59,7 @@ class _MainControllerState extends State<MainController> {
     Train(
       key: PageStorageKey("train"),
     ),
-    Progress(
-      key: PageStorageKey("progress"),
-    ),
+    Profile(),
     Achievements(
       key: PageStorageKey("achievements"),
     ),
@@ -178,7 +172,7 @@ class _MainControllerState extends State<MainController> {
                   UiElements.progress,
                   color: Colors.deepPurple,
                 ),
-                title: Text("Progress")),
+                title: Text("Profile")),
             BubbleBottomBarItem(
                 backgroundColor: Colors.orange,
                 icon: Icon(
