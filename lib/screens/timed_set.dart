@@ -64,10 +64,10 @@ class _TimedSetScreenState extends State<TimedSetScreen>
 
     sub.onDone(() async {
       if (_workoutStepCountdown.round() == 0) {
+        final nextStep = await workoutController.beginNextWorkoutStep();
         await _controller.reverse();
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (BuildContext context) =>
-                workoutController.beginNextWorkoutStep()));
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (BuildContext context) => nextStep));
       }
       sub.cancel();
     });
@@ -109,7 +109,9 @@ class _TimedSetScreenState extends State<TimedSetScreen>
         fit: StackFit.expand,
         children: <Widget>[
           Hero(
-              tag: "background-${workoutController.workoutArea.title}",
+              tag: workoutController.workoutArea == null
+                  ? 'workout-custom'
+                  : "background-${workoutController.workoutArea.title}",
               child: DecoratedBox(
                 decoration: BoxDecoration(
                     gradient: LinearGradient(

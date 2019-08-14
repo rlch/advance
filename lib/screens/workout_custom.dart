@@ -1,5 +1,7 @@
 import 'package:advance/components/ui_elements_icons.dart';
 import 'package:advance/components/user.dart';
+import 'package:advance/screens/workout.dart';
+import 'package:advance/screens/workout_custom_create.dart';
 import 'package:advance/styleguide.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_villains/villain.dart';
@@ -53,17 +55,23 @@ class _WorkoutCustomScreenState extends State<WorkoutCustomScreen> {
             color: user.appTheme.themeColor.primary,
           ),
           backgroundColor: Colors.white,
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => WorkoutCustomCreateScreen()));
+          },
         ),
         body: Stack(
           fit: StackFit.expand,
           children: <Widget>[
-            DecoratedBox(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      colors: user.appTheme.gradientColors,
-                      begin: Alignment.topRight,
-                      end: Alignment.bottomLeft)),
+            Hero(
+              tag: 'workout-custom',
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        colors: user.appTheme.gradientColors,
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomLeft)),
+              ),
             ),
             appBar,
             SafeArea(
@@ -102,9 +110,9 @@ class _WorkoutCustomScreenState extends State<WorkoutCustomScreen> {
                         height: screenHeight * 0.45,
                         child: PageView.builder(
                           controller: _pageController,
-                          itemCount: 1 + (user.customWorkouts?.length ?? 0),
+                          itemCount: (user.customWorkouts?.length ?? 0),
                           itemBuilder: (BuildContext context, int index) {
-                            return _buildWorkout(context);
+                            return _buildWorkout(context, index);
                           },
                         ),
                       ),
@@ -122,8 +130,9 @@ class _WorkoutCustomScreenState extends State<WorkoutCustomScreen> {
     );
   }
 
-  Widget _buildWorkout(BuildContext context) {
+  Widget _buildWorkout(BuildContext context, int index) {
     User user = Provider.of<User>(context);
+    String slug = user.customWorkouts.keys.elementAt(index);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Container(
@@ -141,7 +150,7 @@ class _WorkoutCustomScreenState extends State<WorkoutCustomScreen> {
             Column(
               children: <Widget>[
                 Text(
-                  "title",
+                  user.customWorkouts[slug].title,
                   style: TextStyle(
                       fontFamily: "WorkSans",
                       fontSize: 23,
@@ -167,7 +176,9 @@ class _WorkoutCustomScreenState extends State<WorkoutCustomScreen> {
                   Column(
                     children: <Widget>[
                       Icon(Icons.timer),
-                      Text("feefe" + ' mins')
+                      Text(user.customWorkouts[slug].duration.inMinutes
+                              .toString() +
+                          ' mins')
                     ],
                   ),
                   Column(
@@ -180,7 +191,11 @@ class _WorkoutCustomScreenState extends State<WorkoutCustomScreen> {
               color: user.appTheme.themeColor.primary,
               textColor: Colors.white,
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 22),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) =>
+                        WorkoutCountdownScreen(user.customWorkouts[slug])));
+              },
               child: Text(
                 'Train',
                 style: TextStyle(fontSize: 20, fontFamily: "WorkSans"),

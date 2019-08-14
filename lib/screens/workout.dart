@@ -1,6 +1,7 @@
 import 'package:advance/components/exercise.dart';
 import 'package:advance/components/user.dart';
 import 'package:advance/components/workout.dart';
+import 'package:advance/firebase/user_service.dart';
 import 'package:advance/screens/rest.dart';
 import 'package:advance/screens/timed_set.dart';
 import 'package:advance/screens/workout_results_ad.dart';
@@ -20,7 +21,7 @@ class WorkoutController {
   final Workout workout;
   final WorkoutArea workoutArea;
   final User user;
-  WorkoutController(this.workout, this.workoutArea, this.user) {
+  WorkoutController(this.workout, this.user, {this.workoutArea}) {
     this._currentWorkoutStep = workout.workoutSteps[0];
   }
 
@@ -34,7 +35,7 @@ class WorkoutController {
     );
   }
 
-  Widget beginNextWorkoutStep() {
+  Future<Widget> beginNextWorkoutStep() async {
     if (currentWorkoutStepIndex == null) {
       currentWorkoutStepIndex = 0;
     } else {
@@ -50,12 +51,22 @@ class WorkoutController {
         return _provider(RestScreen());
       }
     } else {
-      finishSteps = [
-        _provider(WorkoutResultsStreakScreen()),
-        _provider(WorkoutResultsLevelScreen()),
-        _provider(WorkoutResultsAdScreen())
-      ];
-      updateLocalStats();
+      if (workoutArea != null) {
+        finishSteps = [
+          _provider(WorkoutResultsStreakScreen()),
+          _provider(WorkoutResultsLevelScreen()),
+          _provider(WorkoutResultsAdScreen())
+        ];
+      } else {
+        finishSteps = [_provider(WorkoutResultsAdScreen())];
+      }
+
+      if (workoutArea != null) {
+        updateLocalStats();
+        await UserService()
+            .updateWorkoutResults(user.firebaseUser.uid, workout, workoutArea);
+      }
+
       return beginNextFinishWorkoutStep();
     }
     return null;
@@ -102,7 +113,7 @@ class WorkoutCountdownScreen extends StatefulWidget {
   final Workout workout;
   final WorkoutArea workoutArea;
 
-  WorkoutCountdownScreen(this.workout, this.workoutArea, {Key key})
+  WorkoutCountdownScreen(this.workout, {this.workoutArea, Key key})
       : super(key: key);
 
   @override
@@ -130,10 +141,11 @@ class _WorkoutCountdownScreenState extends State<WorkoutCountdownScreen>
       });
     }, onDone: () async {
       WorkoutController _workoutController = WorkoutController(
-          widget.workout, widget.workoutArea, Provider.of<User>(context));
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (BuildContext context) =>
-              _workoutController.beginNextWorkoutStep()));
+          widget.workout, Provider.of<User>(context),
+          workoutArea: widget.workoutArea);
+      final nextStep = await _workoutController.beginNextWorkoutStep();
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (BuildContext context) => nextStep));
     });
   }
 
@@ -163,7 +175,9 @@ class _WorkoutCountdownScreenState extends State<WorkoutCountdownScreen>
       fit: StackFit.expand,
       children: <Widget>[
         Hero(
-            tag: "background-${widget.workoutArea.title}",
+            tag: widget.workoutArea == null
+                ? 'workout-custom'
+                : "background-${widget.workoutArea.title}",
             child: DecoratedBox(
               decoration: BoxDecoration(
                   gradient: LinearGradient(

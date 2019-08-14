@@ -1,10 +1,7 @@
 import 'package:advance/components/exercise.dart';
-import 'package:slugify/slugify.dart';
 
 class Workout {
-  String get slug {
-    return Slugify(title, delimiter: '_');
-  }
+  String slug;
   String title;
   Difficulty difficulty;
   List<WorkoutStep> workoutSteps;
@@ -53,6 +50,7 @@ class Workout {
     }
     
     return Workout(
+      slug,
       title,
       workoutSteps.map((step) => _buildWorkoutStep(step)).toList(),
     );
@@ -87,6 +85,7 @@ class Workout {
     }
 
     return Workout(
+      data.keys.first,
       data['title'],
       (data['workout_steps'] as List<dynamic>).map((step) => _buildWorkoutStep(step as Map<dynamic, dynamic>)).toList(),
       difficulty: _difficultyFromString(data['difficulty']),
@@ -94,7 +93,7 @@ class Workout {
     );
   }
 
-  Workout(this.title, this.workoutSteps, {this.difficulty,
+  Workout(this.slug, this.title, this.workoutSteps, {this.difficulty,
       this.requiredLevel});
 
   String getDifficultyString() => difficulty.toString().split('.').last;

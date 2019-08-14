@@ -51,7 +51,9 @@ class _WorkoutResultsStreakScreenState extends State<WorkoutResultsStreakScreen>
         fit: StackFit.expand,
         children: <Widget>[
           Hero(
-              tag: "background-${workoutController.workoutArea.title}",
+              tag: workoutController.workoutArea == null
+                  ? 'workout-custom'
+                  : "background-${workoutController.workoutArea.title}",
               child: DecoratedBox(
                 decoration: BoxDecoration(
                     gradient: LinearGradient(

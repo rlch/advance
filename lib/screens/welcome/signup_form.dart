@@ -34,7 +34,9 @@ class _SignUpFormScreenState extends State<SignUpFormScreen> {
   void initState() {
     KeyboardVisibilityNotification().addNewListener(
       onChange: (bool visible) {
-        _keyboardVisible = visible;
+        setState(() {
+          _keyboardVisible = visible;
+        });
       },
     );
     super.initState();
@@ -45,6 +47,7 @@ class _SignUpFormScreenState extends State<SignUpFormScreen> {
     SignUpDetails signUpDetails = Provider.of<SignUpDetails>(context);
     return Material(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Stack(fit: StackFit.expand, children: <Widget>[
           Container(
             decoration: BoxDecoration(

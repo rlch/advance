@@ -1,4 +1,5 @@
 import 'package:advance/components/achievement.dart';
+import 'package:advance/components/exercise.dart';
 import 'package:advance/components/experience.dart';
 import 'package:advance/components/workout.dart';
 import 'package:advance/components/workout_area.dart';
@@ -15,7 +16,7 @@ class User {
   UserStreak streak;
   AppTheme appTheme;
   List<String> permittedWorkouts;
-  List<Workout> customWorkouts;
+  Map<String, Workout> customWorkouts;
 
   User(
       this.firebaseUser,
@@ -49,7 +50,8 @@ class User {
         0,
         0,
         0,
-        remoteConfigSetup.permittedWorkouts);
+        remoteConfigSetup.permittedWorkouts,
+        customWorkouts: {});
   }
 
   factory User.fromMap(FirebaseUser firebaseUser, Map data) {
@@ -74,6 +76,33 @@ class User {
       _workouts[workout.key] =
           UserWorkout(Experience(workout.value['experience']), _exercises);
     }
+
+    WorkoutStep _mapToStep(Map<dynamic, dynamic> step) {
+      switch (step['type']) {
+        case "timed_set":
+          return TimedSet(step['title'], Duration(seconds: step['duration']));
+        case "rep_set":
+          return RepSet(step['title'], step['reps']);
+        case "rest":
+          return Rest(Duration(seconds: step['duration']));
+        default:
+          return null;
+      }
+    }
+
+    print(data['custom_workouts']);
+
+    Map<String, Workout> _customWorkouts = {};
+    (data['custom_workouts'] as Map<dynamic, dynamic>).entries.forEach(
+        (customWorkout) => _customWorkouts[customWorkout.key] = Workout(
+            customWorkout.key,
+            customWorkout.value['title'],
+            (customWorkout.value['workout_steps']
+                    as List<dynamic>)
+                .map((step) => _mapToStep(step as Map<dynamic, dynamic>))
+                .toList()));
+
+    print(_customWorkouts);
     for (final history
         in (data['streak']['history'] as Map<dynamic, dynamic>).entries) {
       _history[DateFormat('dd-MM-yyyy').format(
@@ -96,7 +125,8 @@ class User {
         data['weight'],
         (data['permitted_workouts'] as List<dynamic>)
             .map((e) => e.toString())
-            .toList());
+            .toList(),
+        customWorkouts: _customWorkouts);
   }
 }
 

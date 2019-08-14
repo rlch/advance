@@ -47,7 +47,9 @@ class _RepSetScreenState extends State<RepSetScreen>
         fit: StackFit.expand,
         children: <Widget>[
           Hero(
-              tag: "background-${workoutController.workoutArea.title}",
+              tag: workoutController.workoutArea == null
+                  ? 'workout-custom'
+                  : "background-${workoutController.workoutArea.title}",
               flightShuttleBuilder: (BuildContext flightContext,
                       Animation<double> animation,
                       HeroFlightDirection flightDirection,
@@ -138,10 +140,10 @@ class _RepSetScreenState extends State<RepSetScreen>
                       padding:
                           EdgeInsets.symmetric(vertical: 15, horizontal: 22),
                       onPressed: () async {
+                        final nextStep = await workoutController.beginNextWorkoutStep();
                         await _controller.reverse();
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                workoutController.beginNextWorkoutStep()));
+                            builder: (BuildContext context) => nextStep));
                       },
                       child: Text(
                         "Continue",

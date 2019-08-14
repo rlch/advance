@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:advance/components/exercise.dart';
 import 'package:advance/components/user.dart';
 import 'package:advance/components/workout.dart';
+import 'package:advance/firebase/user_service.dart';
+import 'package:advance/screens/workout_custom.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_picker/flutter_picker.dart';
@@ -21,7 +23,7 @@ class _WorkoutCustomCreateScreenState extends State<WorkoutCustomCreateScreen> {
   List<Map<String, dynamic>> addedWorkoutSteps = [];
   bool addStepClicked = false;
   String selected;
-  TextEditingController _titleController;
+  TextEditingController _titleController = TextEditingController();
   final _titleKey = GlobalKey<FormState>();
 
   @override
@@ -238,13 +240,15 @@ class _WorkoutCustomCreateScreenState extends State<WorkoutCustomCreateScreen> {
           ));
     }
 
-    T cast<T>(x) => x is T ? x : null;
-
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'workout-create',
+        heroTag:
+            (user.customWorkouts == null || user.customWorkouts.length == 0)
+                ? 'workout-create'
+                : '',
         label: Text(
           'Create',
           style: TextStyle(color: user.appTheme.themeColor.primary),
@@ -254,13 +258,35 @@ class _WorkoutCustomCreateScreenState extends State<WorkoutCustomCreateScreen> {
           color: user.appTheme.themeColor.primary,
         ),
         backgroundColor: Colors.white,
-        onPressed: () {
+        onPressed: () async {
           if (_titleKey.currentState.validate() &&
               addedWorkoutSteps.length > 0) {
-            user.customWorkouts.add(Workout.custom(
-                Slugify(_titleController.text.trim(), delimiter: '_'),
-                _titleController.text.trim(),
-                addedWorkoutSteps));
+            await UserService().createCustomWorkout(user.firebaseUser.uid, {
+              Slugify(_titleController.text.trim()): {
+                "title": _titleController.text.trim(),
+                "workout_steps": addedWorkoutSteps
+              }
+            });
+            if (user.customWorkouts == null) {
+              user.customWorkouts = {
+                Slugify(_titleController.text.trim(), delimiter: '_'):
+                    Workout.custom(
+                        Slugify(_titleController.text.trim(), delimiter: '_'),
+                        _titleController.text.trim(),
+                        addedWorkoutSteps)
+              };
+              ;
+              Navigator.of(context).pop();
+            } else {
+              user.customWorkouts[
+                      Slugify(_titleController.text.trim(), delimiter: '_')] =
+                  Workout.custom(
+                      Slugify(_titleController.text.trim(), delimiter: '_'),
+                      _titleController.text.trim(),
+                      addedWorkoutSteps);
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => WorkoutCustomScreen()));
+            }
           }
         },
       ),
@@ -349,214 +375,225 @@ class _WorkoutCustomCreateScreenState extends State<WorkoutCustomCreateScreen> {
                   height: screenHeight * 0.75,
                   child: Padding(
                     padding: const EdgeInsets.all(30),
-                    child: Container(
-                      padding: EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(20))),
-                      child: addStepClicked
-                          ? Column(
-                              children: <Widget>[
-                                Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: <Widget>[
-                                    Text('Timed'),
-                                    SizedBox(
-                                      width: 15,
-                                    ),
-                                    Text('Reps'),
-                                    SizedBox(
-                                      width: 20,
-                                    )
-                                  ],
-                                ),
-                                Expanded(
-                                  child: ListView.builder(
-                                    itemCount: workoutSteps.length,
-                                    itemBuilder: (_, i) {
-                                      return ListTile(
-                                        title: AutoSizeText(
-                                          workoutSteps.values.toList()[i].title,
-                                          maxFontSize: 16,
-                                        ),
-                                        trailing: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: <Widget>[
-                                            Radio(
-                                              activeColor: user
-                                                  .appTheme.themeColor.primary,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  selected = value;
-                                                });
-                                              },
-                                              value: json.encode({
-                                                "type": "timed_set",
-                                                "title": workoutSteps.values
-                                                    .toList()[i]
-                                                    .title,
-                                                "duration": 0
-                                              }),
-                                              groupValue: selected,
-                                            ),
-                                            Radio(
-                                              activeColor: user
-                                                  .appTheme.themeColor.primary,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  selected = value;
-                                                });
-                                              },
-                                              value: json.encode({
-                                                "type": "rep_set",
-                                                "title": workoutSteps.values
-                                                    .toList()[i]
-                                                    .title,
-                                                "reps": 1
-                                              }),
-                                              groupValue: selected,
-                                            )
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    IconButton(
-                                      icon: Icon(
-                                        Icons.close,
-                                        color: user.appTheme.themeColor.primary,
+                    child: Hero(
+                      tag: (user.customWorkouts == null ||
+                              user.customWorkouts.length == 0)
+                          ? ''
+                          : 'workout-create',
+                      child: Container(
+                        padding: EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20))),
+                        child: addStepClicked
+                            ? Column(
+                                children: <Widget>[
+                                  Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: <Widget>[
+                                      Text('Timed'),
+                                      SizedBox(
+                                        width: 15,
                                       ),
-                                      onPressed: () {
-                                        setState(() {
-                                          addStepClicked = false;
-                                        });
+                                      Text('Reps'),
+                                      SizedBox(
+                                        width: 20,
+                                      )
+                                    ],
+                                  ),
+                                  Expanded(
+                                    child: ListView.builder(
+                                      itemCount: workoutSteps.length,
+                                      itemBuilder: (_, i) {
+                                        return ListTile(
+                                          title: AutoSizeText(
+                                            workoutSteps.values
+                                                .toList()[i]
+                                                .title,
+                                            maxFontSize: 16,
+                                          ),
+                                          trailing: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: <Widget>[
+                                              Radio(
+                                                activeColor: user.appTheme
+                                                    .themeColor.primary,
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    selected = value;
+                                                  });
+                                                },
+                                                value: json.encode({
+                                                  "type": "timed_set",
+                                                  "title": workoutSteps.values
+                                                      .toList()[i]
+                                                      .title,
+                                                  "duration": 0
+                                                }),
+                                                groupValue: selected,
+                                              ),
+                                              Radio(
+                                                activeColor: user.appTheme
+                                                    .themeColor.primary,
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    selected = value;
+                                                  });
+                                                },
+                                                value: json.encode({
+                                                  "type": "rep_set",
+                                                  "title": workoutSteps.values
+                                                      .toList()[i]
+                                                      .title,
+                                                  "reps": 1
+                                                }),
+                                                groupValue: selected,
+                                              )
+                                            ],
+                                          ),
+                                        );
                                       },
                                     ),
-                                    IconButton(
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      IconButton(
                                         icon: Icon(
-                                          Icons.check,
+                                          Icons.close,
                                           color:
                                               user.appTheme.themeColor.primary,
                                         ),
                                         onPressed: () {
                                           setState(() {
-                                            addedWorkoutSteps
-                                                .add(json.decode(selected));
                                             addStepClicked = false;
                                           });
-                                        })
-                                  ],
-                                )
-                              ],
-                            )
-                          : Column(
-                              children: <Widget>[
-                                Expanded(
-                                  child: ReorderableListView(
-                                    onReorder: (oldIndex, newIndex) {
-                                      print((addedWorkoutSteps
-                                          .map((f) => f["title"])
-                                          .toList()));
-                                      print(newIndex);
-                                      if (newIndex < addedWorkoutSteps.length) {
-                                        var tmp = addedWorkoutSteps[oldIndex];
-                                        setState(() {
-                                          addedWorkoutSteps[oldIndex] =
-                                              addedWorkoutSteps[newIndex];
-                                          addedWorkoutSteps[newIndex] = tmp;
-                                        });
-                                      }
-                                      print((addedWorkoutSteps
-                                          .map((f) => f["title"])
-                                          .toList()));
-                                    },
-                                    children: List.generate(
-                                        addedWorkoutSteps.length, (index) {
-                                      final step = addedWorkoutSteps[index];
-                                      switch (step['type']) {
-                                        case 'timed_set':
-                                          return _buildTimedSet(
-                                              TimedSet(
-                                                  step['title'],
-                                                  Duration(
-                                                      seconds:
-                                                          step['duration'])),
-                                              index);
-                                        case 'rest':
-                                          return _buildRest(
-                                              Rest(Duration(
-                                                  seconds: step['duration'])),
-                                              index);
-                                        case 'rep_set':
-                                          return _buildRepSet(
-                                              RepSet(
-                                                  step['title'], step['reps']),
-                                              index);
-                                        default:
-                                          return null;
-                                      }
-                                    }),
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: <Widget>[
-                                    RaisedButton.icon(
-                                        color: Colors.white,
-                                        elevation: 0,
-                                        highlightElevation: 0,
-                                        label: Text(
-                                          'Exercise',
-                                          style: TextStyle(
-                                              color: user
-                                                  .appTheme.themeColor.primary),
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            addStepClicked = true;
-                                          });
                                         },
-                                        icon: Icon(
-                                          Icons.add,
-                                          color:
-                                              user.appTheme.themeColor.primary,
-                                        )),
-                                    RaisedButton.icon(
-                                        color: Colors.white,
-                                        elevation: 0,
-                                        highlightElevation: 0,
-                                        label: Text(
-                                          'Rest',
-                                          style: TextStyle(
-                                              color: user
-                                                  .appTheme.themeColor.primary),
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            addedWorkoutSteps.add({
-                                              "type": "rest",
-                                              "duration": 0
+                                      ),
+                                      IconButton(
+                                          icon: Icon(
+                                            Icons.check,
+                                            color: user
+                                                .appTheme.themeColor.primary,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              addedWorkoutSteps
+                                                  .add(json.decode(selected));
+                                              addStepClicked = false;
                                             });
+                                          })
+                                    ],
+                                  )
+                                ],
+                              )
+                            : Column(
+                                children: <Widget>[
+                                  Expanded(
+                                    child: ReorderableListView(
+                                      onReorder: (oldIndex, newIndex) {
+                                        print((addedWorkoutSteps
+                                            .map((f) => f["title"])
+                                            .toList()));
+                                        print(newIndex);
+                                        if (newIndex <
+                                            addedWorkoutSteps.length) {
+                                          var tmp = addedWorkoutSteps[oldIndex];
+                                          setState(() {
+                                            addedWorkoutSteps[oldIndex] =
+                                                addedWorkoutSteps[newIndex];
+                                            addedWorkoutSteps[newIndex] = tmp;
                                           });
-                                        },
-                                        icon: Icon(
-                                          Icons.add,
-                                          color:
-                                              user.appTheme.themeColor.primary,
-                                        ))
-                                  ],
-                                ),
-                              ],
-                            ),
+                                        }
+                                        print((addedWorkoutSteps
+                                            .map((f) => f["title"])
+                                            .toList()));
+                                      },
+                                      children: List.generate(
+                                          addedWorkoutSteps.length, (index) {
+                                        final step = addedWorkoutSteps[index];
+                                        switch (step['type']) {
+                                          case 'timed_set':
+                                            return _buildTimedSet(
+                                                TimedSet(
+                                                    step['title'],
+                                                    Duration(
+                                                        seconds:
+                                                            step['duration'])),
+                                                index);
+                                          case 'rest':
+                                            return _buildRest(
+                                                Rest(Duration(
+                                                    seconds: step['duration'])),
+                                                index);
+                                          case 'rep_set':
+                                            return _buildRepSet(
+                                                RepSet(step['title'],
+                                                    step['reps']),
+                                                index);
+                                          default:
+                                            return null;
+                                        }
+                                      }),
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: <Widget>[
+                                      RaisedButton.icon(
+                                          color: Colors.white,
+                                          elevation: 0,
+                                          highlightElevation: 0,
+                                          label: Text(
+                                            'Exercise',
+                                            style: TextStyle(
+                                                color: user.appTheme.themeColor
+                                                    .primary),
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              addStepClicked = true;
+                                            });
+                                          },
+                                          icon: Icon(
+                                            Icons.add,
+                                            color: user
+                                                .appTheme.themeColor.primary,
+                                          )),
+                                      RaisedButton.icon(
+                                          color: Colors.white,
+                                          elevation: 0,
+                                          highlightElevation: 0,
+                                          label: Text(
+                                            'Rest',
+                                            style: TextStyle(
+                                                color: user.appTheme.themeColor
+                                                    .primary),
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              addedWorkoutSteps.add({
+                                                "type": "rest",
+                                                "duration": 0
+                                              });
+                                            });
+                                          },
+                                          icon: Icon(
+                                            Icons.add,
+                                            color: user
+                                                .appTheme.themeColor.primary,
+                                          ))
+                                    ],
+                                  ),
+                                ],
+                              ),
+                      ),
                     ),
                   ),
                 ),

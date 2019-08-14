@@ -26,7 +26,7 @@ class UserService {
       'height': signUpDetails.height,
       'achievements': Map<String, dynamic>.fromIterable(
           remoteConfigSetup.achievements,
-          key: (item) => item.id.toString(),
+          key: (item) => item.slug,
           value: (_) => {'level': 0, 'progress': 0}),
       'energy': 0,
       'streak': {
@@ -107,11 +107,17 @@ class UserService {
                   1
             }
           },
-          "experience": doc.data['workouts'][workoutArea.slug]
-                  ['experience'] +
+          "experience": doc.data['workouts'][workoutArea.slug]['experience'] +
               workout.experience
         }
       }
+    }, merge: true);
+  }
+
+  Future<void> createCustomWorkout(
+      String uid, Map<String, dynamic> workout) async {
+    await Firestore.instance.collection('users').document(uid).setData({
+      'custom_workouts': workout,
     }, merge: true);
   }
 }

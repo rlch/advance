@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:advance/components/user.dart';
-import 'package:advance/firebase/user_service.dart';
 import 'package:advance/screens/workout.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
@@ -36,9 +35,6 @@ class _WorkoutResultsLevelScreenState extends State<WorkoutResultsAdScreen> {
               });
               break;
             case MobileAdEvent.closed:
-              User user = Provider.of<User>(context);
-              WorkoutController workoutController = Provider.of<WorkoutController>(context);
-              await UserService().updateWorkoutResults(user.firebaseUser.uid, workoutController.workout, workoutController.workoutArea);
               Navigator.of(context).popUntil((route) => route.isFirst);
               break;
             default:
@@ -72,7 +68,9 @@ class _WorkoutResultsLevelScreenState extends State<WorkoutResultsAdScreen> {
         fit: StackFit.expand,
         children: <Widget>[
           Hero(
-              tag: "background-${workoutController.workoutArea.title}",
+              tag: workoutController.workoutArea == null
+                  ? 'workout-custom'
+                  : "background-${workoutController.workoutArea.title}",
               child: DecoratedBox(
                 decoration: BoxDecoration(
                     gradient: LinearGradient(

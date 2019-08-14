@@ -58,12 +58,11 @@ class _RestScreenState extends State<RestScreen>
         }
       });
     }, onDone: () async {
-      print('here');
+      final nextStep = await workoutController.beginNextWorkoutStep();
       await _controller.reverse();
       if (_restCountdown.round() == 0) {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (BuildContext context) =>
-                workoutController.beginNextWorkoutStep()));
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (BuildContext context) => nextStep));
       }
     });
   }
@@ -108,7 +107,9 @@ class _RestScreenState extends State<RestScreen>
         fit: StackFit.expand,
         children: <Widget>[
           Hero(
-              tag: "background-${workoutController.workoutArea.title}",
+              tag: workoutController.workoutArea == null
+                  ? 'workout-custom'
+                  : "background-${workoutController.workoutArea.title}",
               child: DecoratedBox(
                 decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -170,14 +171,13 @@ class _RestScreenState extends State<RestScreen>
                       radius: 200,
                       lineWidth: 20,
                       animation: false,
-                      percent:
-                          (((_restCountdown != null && _restCountdown >= 0)
-                                  ? _restCountdown
-                                  : 0) /
-                              (workoutController.getWorkoutStepAtIndex(
-                                      _currentScreenIndex) as Rest)
-                                  .duration
-                                  .inSeconds),
+                      percent: (((_restCountdown != null && _restCountdown >= 0)
+                              ? _restCountdown
+                              : 0) /
+                          (workoutController.getWorkoutStepAtIndex(
+                                  _currentScreenIndex) as Rest)
+                              .duration
+                              .inSeconds),
                       circularStrokeCap: CircularStrokeCap.round,
                       progressColor: Colors.white,
                       center: Text(

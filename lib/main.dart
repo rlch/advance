@@ -21,7 +21,6 @@ import 'package:flutter_villains/villains/villains.dart';
 
 void main() async {
   FirebaseAnalytics analytics = FirebaseAnalytics();
-  await FirebaseAuth.instance.signOut();
   FirebaseUser firebaseUser = await checkAuthStatus();
 
   RemoteConfigSetup remoteConfigSetup = await RemoteConfigSetup().setup();

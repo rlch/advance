@@ -47,8 +47,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
         title: Material(
             color: Colors.transparent,
             child: Container(
-                child: Text(widget.workoutArea.title,
-                    style: AppTheme.heading))));
+                child:
+                    Text(widget.workoutArea.title, style: AppTheme.heading))));
 
     return WillPopScope(
       onWillPop: () async => false,
@@ -127,8 +127,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                       radius: 70,
                       lineWidth: 12,
                       animation: false,
-                      percent: user
-                          .workouts[widget.workoutArea.slug].experience.progress,
+                      percent: user.workouts[widget.workoutArea.slug].experience
+                          .progress,
                       circularStrokeCap: CircularStrokeCap.round,
                       progressColor: Colors.white,
                       backgroundColor: user.appTheme.circleDark,
@@ -219,7 +219,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => WorkoutCountdownScreen(
-                              workout, widget.workoutArea)));
+                              workout,
+                              workoutArea: widget.workoutArea)));
                 }
               },
               child: (workout.requiredLevel <=
@@ -237,5 +238,4 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       ),
     );
   }
-
 }
