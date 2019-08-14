@@ -1,43 +1,61 @@
-import 'package:advance/components/achievement.dart' as prefix0;
+import 'package:advance/components/achievement.dart';
 import 'package:advance/components/experience.dart';
 import 'package:advance/components/workout.dart';
 import 'package:advance/components/workout_area.dart';
+import 'package:advance/firebase/remote_config.dart';
 import 'package:advance/styleguide.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 class User {
   final FirebaseUser firebaseUser;
-  int energy;
+  int energy, gender, height, weight;
   Map<int, UserAchievement> achievements;
   Map<int, UserWorkout> workouts;
   UserStreak streak;
   AppTheme appTheme;
+  List<String> permittedWorkouts;
+  List<Workout> customWorkouts;
 
-  User(this.firebaseUser, this.energy, this.achievements, this.workouts,
-      this.streak, this.appTheme);
+  User(
+      this.firebaseUser,
+      this.energy,
+      this.achievements,
+      this.workouts,
+      this.streak,
+      this.appTheme,
+      this.gender,
+      this.height,
+      this.weight,
+      this.permittedWorkouts,
+      {this.customWorkouts});
 
-  factory User.base() {
+  factory User.base(RemoteConfigSetup remoteConfigSetup) {
     return User(
         null,
         0,
-        Map.fromIterable(prefix0.achievements,
-            key: (achievement) => (achievement as prefix0.Achievement).id,
+        Map.fromIterable(remoteConfigSetup.achievements,
+            key: (achievement) => (achievement as Achievement).id,
             value: (_) => UserAchievement(0, 0)),
-        Map.fromIterable(workoutAreas,
+        Map.fromIterable(remoteConfigSetup.workoutAreas.values,
             key: (area) => (area as WorkoutArea).id,
             value: (area) => UserWorkout(
-                Experience(0),
+                Experience(100.0),
                 Map.fromIterable((area as WorkoutArea).workouts,
                     key: (workout) => (workout as Workout).id,
                     value: (_) => UserExercise(0)))),
-        UserStreak(0, 0),
-        AppTheme(themeColors[0]));
+        UserStreak(0, 0, 0),
+        AppTheme(themeColors[0]),
+        0,
+        0,
+        0,
+        remoteConfigSetup.permittedWorkouts);
   }
 
   factory User.fromMap(FirebaseUser firebaseUser, Map data) {
     Map<int, UserAchievement> _achievements = {};
     Map<int, UserWorkout> _workouts = {};
-    List<UserStreakHistory> _history = [];
+    Map<String, UserStreakHistory> _history = {};
 
     print(AppTheme(themeColors[data['color']]).themeColor.light);
 
@@ -58,9 +76,12 @@ class User {
     }
     for (final history
         in (data['streak']['history'] as Map<dynamic, dynamic>).entries) {
-      _history.add(UserStreakHistory(
+      _history[DateFormat('dd-MM-yyyy').format(
+          DateTime.fromMillisecondsSinceEpoch(
+              history.value['timestamp']))] = UserStreakHistory(
           DateTime.fromMillisecondsSinceEpoch(history.value['timestamp']),
-          history.value['timestamp']));
+          history.value['experience'],
+          history.value['workouts_completed']);
     }
     return User(
         firebaseUser,
@@ -68,8 +89,14 @@ class User {
         _achievements,
         _workouts,
         UserStreak(data['streak']['current'], data['streak']['record'],
-            history: _history),
-        AppTheme(themeColors[data['color']]));
+            data['streak']['target'], history: _history),
+        AppTheme(themeColors[data['color']]),
+        data['gender'],
+        data['height'],
+        data['weight'],
+        (data['permitted_workouts'] as List<dynamic>)
+            .map((e) => e.toString())
+            .toList());
   }
 }
 
@@ -96,14 +123,16 @@ class UserExercise {
 class UserStreak {
   int current;
   int record;
-  List<UserStreakHistory> history;
+  int target;
+  Map<String, UserStreakHistory> history;
 
-  UserStreak(this.current, this.record, {this.history});
+  UserStreak(this.current, this.record, this.target, {this.history});
 }
 
 class UserStreakHistory {
   DateTime date;
-  int experience;
+  double experience;
+  int workoutsCompleted;
 
-  UserStreakHistory(this.date, this.experience);
+  UserStreakHistory(this.date, this.experience, this.workoutsCompleted);
 }

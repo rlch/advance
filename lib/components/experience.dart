@@ -1,9 +1,19 @@
 import 'dart:math';
 
 class Experience {
-  int amount;
-  int get level => ((25 + sqrt(625 + 100 * amount)) / 50).floor();
-  double get progress => (amount - 25 * level * (level - 1)) / (50 * level);
-  int get xpLeft => (25 * (level + 1) * ((level + 1) - 1)) - amount;
+  double amount;
+  int get level => (log(amount / 100) / log(1.3) + 1).floor();
+  double get progress =>
+      (amount - xpFor(level)) / (xpFor(level + 1) - xpFor(level));
+  double get xpLeft => xpFor(level + 1) - amount;
+
+  double xpFor(int n) {
+    return pow(1.3, n - 1) * 100;
+  }
+
+  double calcAddedProgress(double xp) {
+    return (amount + xp - xpFor(level)) / (xpFor(level + 1) - xpFor(level));
+  }
+
   Experience(this.amount);
 }

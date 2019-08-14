@@ -1,5 +1,6 @@
 import 'package:advance/components/user.dart';
 import 'package:advance/firebase/auth.dart';
+import 'package:advance/firebase/remote_config.dart';
 import 'package:advance/firebase/user_service.dart';
 import 'package:advance/main.dart';
 import 'package:advance/styleguide.dart';
@@ -213,9 +214,15 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
                                       _emailController.text.trim(),
                                       _passwordController.text);
                                   FocusScope.of(context).unfocus();
+                                  final RemoteConfigSetup remoteConfigSetup =
+                                      Provider.of<RemoteConfigSetup>(context);
                                   runApp(MultiProvider(providers: [
+                                    Provider.value(
+                                      value: remoteConfigSetup,
+                                    ),
                                     StreamProvider<User>(
-                                        initialData: User.base(),
+                                        initialData:
+                                            User.base(remoteConfigSetup),
                                         builder: (_) => UserService()
                                             .streamUser(firebaseUser)),
                                   ], child: RootApp()));

@@ -37,7 +37,7 @@ class AppTheme {
 
   final Color iconGrey = Colors.black.withOpacity(0.3);
 
-  final Color circleDark = Colors.black.withAlpha(50);
+  final Color circleDark = Colors.black.withAlpha(80);
 
   ThemeData get mainTheme {
     return ThemeData(
@@ -56,7 +56,6 @@ class AppTheme {
   }
 
   static final ThemeData rootTheme = ThemeData(
-      brightness: Brightness.dark,
       primaryColor: Color(0xffec407a),
       accentColor: Colors.redAccent.shade400,
       fontFamily: "WorkSans",
@@ -68,7 +67,7 @@ class AppTheme {
             fontSize: 24,
           )),
       scaffoldBackgroundColor: Colors.white,
-      primarySwatch: Colors.pink[400]);
+      primarySwatch: Colors.pink);
 
   static final TextStyle welcomeTitle = TextStyle(
       fontWeight: FontWeight.w800,

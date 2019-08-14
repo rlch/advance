@@ -1,8 +1,7 @@
 import 'package:advance/components/exercise.dart';
 import 'package:advance/components/user.dart';
-import 'package:advance/components/workout_area.dart';
+import 'package:advance/screens/workout.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_villains/villain.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:quiver/async.dart';
@@ -10,9 +9,7 @@ import 'package:quiver/async.dart';
 import '../styleguide.dart';
 
 class RestScreen extends StatefulWidget {
-  final WorkoutArea workoutArea;
-  final Rest rest;
-  RestScreen({Key key, this.workoutArea, this.rest}) : super(key: key);
+  RestScreen({Key key}) : super(key: key);
 
   @override
   _RestScreenState createState() => _RestScreenState();
@@ -29,22 +26,24 @@ class _RestScreenState extends State<RestScreen>
   AnimationController _controller;
   Animation<double> _opacity;
 
+  int _currentScreenIndex;
+
   @override
   void initState() {
-    print("init rest");
     _restStarted = true;
-    _controller = AnimationController(
-        duration: Duration(milliseconds: 2000), vsync: this);
+    _controller =
+        AnimationController(duration: Duration(milliseconds: 300), vsync: this);
 
     _opacity = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-        parent: _controller, curve: Interval(0.0, 1, curve: Curves.ease)));
-
+        parent: _controller, curve: Interval(0.0, 0.6, curve: Curves.ease)));
     _controller.forward().orCancel;
     _restStarted = false;
     super.initState();
   }
 
   void _startRestTimer(Rest rest, {double resumeAt}) {
+    WorkoutController workoutController =
+        Provider.of<WorkoutController>(context);
     _countdown = rest.duration.inSeconds;
     _restCountdownTimer = CountdownTimer(
         Duration(seconds: _countdown), Duration(milliseconds: 1));
@@ -58,10 +57,13 @@ class _RestScreenState extends State<RestScreen>
           _restCountdown = resumeAt - duration.elapsed.inMilliseconds / 1000;
         }
       });
-    }, onDone: () {
-      _controller.reverse();
+    }, onDone: () async {
+      print('here');
+      await _controller.reverse();
       if (_restCountdown.round() == 0) {
-        Navigator.of(context).pop(true);
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (BuildContext context) =>
+                workoutController.beginNextWorkoutStep()));
       }
     });
   }
@@ -86,11 +88,19 @@ class _RestScreenState extends State<RestScreen>
   @override
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context);
-    print(_opacity.value);
+    WorkoutController workoutController =
+        Provider.of<WorkoutController>(context);
+
+    if (_currentScreenIndex == null) {
+      _currentScreenIndex = workoutController.currentWorkoutStepIndex;
+    }
+
     if (!_restStarted) {
-      _startRestTimer(widget.rest);
+      _startRestTimer(
+          workoutController.getWorkoutStepAtIndex(_currentScreenIndex));
       _restStarted = true;
     }
+
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
@@ -98,7 +108,7 @@ class _RestScreenState extends State<RestScreen>
         fit: StackFit.expand,
         children: <Widget>[
           Hero(
-              tag: "background-${widget.workoutArea.title}",
+              tag: "background-${workoutController.workoutArea.title}",
               child: DecoratedBox(
                 decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -111,23 +121,37 @@ class _RestScreenState extends State<RestScreen>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Villain(
-                  villainAnimation: VillainAnimation.fade(
-                      from: Duration(milliseconds: 0),
-                      to: Duration(milliseconds: 1000),
-                      fadeFrom: 0,
-                      fadeTo: 1,
-                      curve: Curves.linear),
-                  animateExit: true,
-                  animateEntrance: true,
-                  child: AppBar(
-                    elevation: 0.0,
-                    centerTitle: true,
-                    title: Text(
-                      widget.rest.title,
+                AppBar(
+                  elevation: 0.0,
+                  centerTitle: true,
+                  title: Hero(
+                    tag: 'workout-title',
+                    flightShuttleBuilder: (BuildContext flightContext,
+                            Animation<double> animation,
+                            HeroFlightDirection flightDirection,
+                            BuildContext fromHeroContext,
+                            BuildContext toHeroContext) =>
+                        Material(
+                            color: Colors.transparent,
+                            child: toHeroContext.widget),
+                    child: Text(
+                      workoutController
+                          .getWorkoutStepAtIndex(_currentScreenIndex)
+                          .title,
                       style: AppTheme.heading,
                     ),
-                    leading: IconButton(
+                  ),
+                  leading: Hero(
+                    flightShuttleBuilder: (BuildContext flightContext,
+                            Animation<double> animation,
+                            HeroFlightDirection flightDirection,
+                            BuildContext fromHeroContext,
+                            BuildContext toHeroContext) =>
+                        Material(
+                            color: Colors.transparent,
+                            child: toHeroContext.widget),
+                    tag: 'close',
+                    child: IconButton(
                       iconSize: 40,
                       icon: Icon(Icons.close),
                       color: Colors.white,
@@ -135,8 +159,8 @@ class _RestScreenState extends State<RestScreen>
                         Navigator.of(context).pop(false);
                       },
                     ),
-                    backgroundColor: Colors.transparent,
                   ),
+                  backgroundColor: Colors.transparent,
                 ),
                 FadeTransition(
                   opacity: _opacity,
@@ -146,10 +170,14 @@ class _RestScreenState extends State<RestScreen>
                       radius: 200,
                       lineWidth: 20,
                       animation: false,
-                      percent: (((_restCountdown != null && _restCountdown >= 0)
-                              ? _restCountdown
-                              : 0) /
-                          widget.rest.duration.inSeconds),
+                      percent:
+                          (((_restCountdown != null && _restCountdown >= 0)
+                                  ? _restCountdown
+                                  : 0) /
+                              (workoutController.getWorkoutStepAtIndex(
+                                      _currentScreenIndex) as Rest)
+                                  .duration
+                                  .inSeconds),
                       circularStrokeCap: CircularStrokeCap.round,
                       progressColor: Colors.white,
                       center: Text(
@@ -167,22 +195,27 @@ class _RestScreenState extends State<RestScreen>
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 50.0),
-                  child: RaisedButton(
-                    elevation: 8,
-                    color: Colors.white,
-                    textColor: user.appTheme.themeColor.primary,
-                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 22),
-                    onPressed: () {
-                      _isPaused
-                          ? _resumeRestTimer(widget.rest)
-                          : _pauseRestTimer();
-                    },
-                    child: Text(
-                      _isPaused ? "Resume" : "Pause",
-                      style: TextStyle(fontSize: 20, fontFamily: "WorkSans"),
+                  child: Hero(
+                    tag: 'workout-button',
+                    child: RaisedButton(
+                      elevation: 8,
+                      color: Colors.white,
+                      textColor: user.appTheme.themeColor.primary,
+                      padding:
+                          EdgeInsets.symmetric(vertical: 15, horizontal: 22),
+                      onPressed: () {
+                        _isPaused
+                            ? _resumeRestTimer(workoutController
+                                .getWorkoutStepAtIndex(_currentScreenIndex))
+                            : _pauseRestTimer();
+                      },
+                      child: Text(
+                        _isPaused ? "Resume" : "Pause",
+                        style: TextStyle(fontSize: 20, fontFamily: "WorkSans"),
+                      ),
+                      shape: new RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40)),
                     ),
-                    shape: new RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(40)),
                   ),
                 ),
               ],

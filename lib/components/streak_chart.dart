@@ -1,17 +1,38 @@
 import 'dart:async';
 
+import 'package:advance/components/user.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class StreakChart extends StatefulWidget {
+  final Map<String, UserStreakHistory> history;
   final Color themeColor;
-  StreakChart({this.themeColor});
+  StreakChart({this.history, this.themeColor});
 
   @override
   State<StatefulWidget> createState() => _StreakChartState();
 }
 
 class _StreakChartState extends State<StreakChart> {
+  DateTime now = DateTime.now();
+  DateTime date;
+  DateFormat format = DateFormat('dd-MM-yyyy');
+
+  List<DateTime> days;
+  List<String> daysFormatted;
+
+  List<DateTime> calculateDaysInterval(DateTime startDate, DateTime endDate) {
+    List<DateTime> days = [];
+    for (int i = 0; i <= endDate.difference(startDate).inDays; i++) {
+      days.add(startDate.add(Duration(days: i)));
+    }
+    return days;
+  }
+
+  double _max = 0;
+  double _height = 16;
+
   final Color barColor = Colors.white;
   final Color barBackgroundColor = Colors.transparent;
   final double width = 18;
@@ -25,27 +46,40 @@ class _StreakChartState extends State<StreakChart> {
 
   @override
   void initState() {
-    super.initState();
-    final barGroup1 = makeGroupData(0, 5);
-    final barGroup2 = makeGroupData(1, 6.5);
-    final barGroup3 = makeGroupData(2, 5);
-    final barGroup4 = makeGroupData(3, 7.5);
-    final barGroup5 = makeGroupData(4, 9);
-    final barGroup6 = makeGroupData(5, 8);
-    final barGroup7 = makeGroupData(6, 6.5);
+    date = DateTime(now.year, now.month, now.day);
+    days = calculateDaysInterval(date.subtract(Duration(days: 6)), date);
+    daysFormatted =
+        calculateDaysInterval(date.subtract(Duration(days: 6)), date)
+            .map((datetime) => format.format(datetime))
+            .toList();
+    print(widget.history);
+    print(daysFormatted);
 
-    final items = [
-      barGroup1,
-      barGroup2,
-      barGroup3,
-      barGroup4,
-      barGroup5,
-      barGroup6,
-      barGroup7,
-    ];
+    for (final key in daysFormatted) {
+      if (widget.history.containsKey(key)) {
+        final item = widget.history[key];
+        if (item.experience > _max) {
+          _max = item.experience;
+        }
+      }
+    }
+    if (_max == 0) {
+      _max = 1;
+    }
+
+    super.initState();
+
+    final items = List<BarChartGroupData>.generate(
+        7,
+        (index) => makeGroupData(
+            days[index].weekday - 1,
+            (widget.history.containsKey(daysFormatted[index]))
+                ? _height *
+                    widget.history[daysFormatted[index]].experience /
+                    _max
+                : 0));
 
     rawBarGroups = items;
-
     showingBarGroups = rawBarGroups;
 
     barTouchedResultStreamController = StreamController();
@@ -159,24 +193,24 @@ class _StreakChartState extends State<StreakChart> {
                                 fontSize: 14),
                             margin: 16,
                             getTitles: (double value) {
-                              switch (value.toInt()) {
-                                case 0:
-                                  return 'M';
-                                case 1:
-                                  return 'T';
-                                case 2:
-                                  return 'W';
-                                case 3:
-                                  return 'T';
-                                case 4:
-                                  return 'F';
-                                case 5:
-                                  return 'S';
-                                case 6:
-                                  return 'S';
-                                default:
-                                  return '?';
+                              List<String> dates = [
+                                'M',
+                                'T',
+                                'W',
+                                'T',
+                                'F',
+                                'S',
+                                'S'
+                              ];
+                              List<Object> rotate(List<Object> list, int v) {
+                                if (list == null || list.isEmpty) return list;
+                                var i = v % list.length;
+                                return list.sublist(i)
+                                  ..addAll(list.sublist(0, i));
                               }
+
+                              dates = rotate(dates, 4 - date.weekday);
+                              return dates[value.floor()];
                             }),
                         leftTitles: SideTitles(
                           showTitles: false,
@@ -209,7 +243,7 @@ class _StreakChartState extends State<StreakChart> {
         isRound: true,
         backDrawRodData: BackgroundBarChartRodData(
           show: true,
-          y: 10,
+          y: _height,
           color: Colors.black.withOpacity(0.2),
         ),
       ),

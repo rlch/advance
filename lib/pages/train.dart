@@ -26,6 +26,8 @@ class _TrainState extends State<Train> {
 
   Widget _buildSlider(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    List<String> permittedWorkouts = Provider.of<List<String>>(context);
+    Map<String, WorkoutArea> workoutAreas = Provider.of<Map<String, WorkoutArea>>(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -35,9 +37,9 @@ class _TrainState extends State<Train> {
             behavior: BlankScrollBehaviour(),
             child: PageView.builder(
               controller: pageController,
-              itemCount: workoutAreas.length,
+              itemCount: permittedWorkouts.length,
               itemBuilder: (BuildContext context, int index) {
-                return _buildCard(context, workoutAreas[index]);
+                return _buildCard(context, workoutAreas[permittedWorkouts[index]]);
               },
             ),
           ),
@@ -85,12 +87,9 @@ class _TrainState extends State<Train> {
               padding: const EdgeInsets.only(bottom: 100.0),
               child: Align(
                   alignment: Alignment.center,
-                  child: Hero(
-                    tag: "image-${workoutArea.title}",
-                    child: Container(
-                      width: screenWidth * 0.5,
-                      child: Image.asset(workoutArea.imagePath),
-                    ),
+                  child: Container(
+                    width: screenWidth * 0.5,
+                    child: Image.asset(workoutArea.imagePath),
                   )),
             ),
             Row(
@@ -105,16 +104,13 @@ class _TrainState extends State<Train> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
-                        Hero(
-                          tag: "title-${workoutArea.title}",
-                          child: Material(
-                            color: Colors.transparent,
-                            child: Container(
-                              child: AutoSizeText(
-                                workoutArea.title,
-                                maxLines: 1,
-                                style: Theme.of(context).textTheme.headline,
-                              ),
+                        Material(
+                          color: Colors.transparent,
+                          child: Container(
+                            child: AutoSizeText(
+                              workoutArea.title,
+                              maxLines: 1,
+                              style: Theme.of(context).textTheme.headline,
                             ),
                           ),
                         ),
@@ -159,7 +155,7 @@ class _TrainState extends State<Train> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Center(child: _buildSlider(context)),
+      child: Center(child:  _buildSlider(context)),
     );
   }
 }

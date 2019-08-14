@@ -31,6 +31,7 @@ class _AchievementsState extends State<Achievements> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     User user = Provider.of<User>(context);
+    List<Achievement> achievements = Provider.of<List<Achievement>>(context);
     return ScrollConfiguration(
       behavior: BlankScrollBehaviour(),
       child: Container(
@@ -64,7 +65,8 @@ class _AchievementsState extends State<Achievements> {
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: _buildStars(user.achievements[achievement.id].level),
+                              children: _buildStars(
+                                  user.achievements[achievement.id].level),
                             )
                           ],
                         ),
@@ -89,7 +91,8 @@ class _AchievementsState extends State<Achievements> {
                           Padding(
                             padding: const EdgeInsets.only(left: 15.0),
                             child: Text(
-                              achievement.description(),
+                              achievement.descriptions[
+                                  user.achievements[achievement.id].level],
                               style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 14,
@@ -103,20 +106,28 @@ class _AchievementsState extends State<Achievements> {
                                 Expanded(
                                   child: LinearPercentIndicator(
                                     lineHeight: 18,
-                                    percent: user.achievements[achievement.id].progress + 0.2 /
-                                        achievement.goal(),
+                                    percent: user.achievements[achievement.id]
+                                            .progress /
+                                        achievement.goals[user
+                                            .achievements[achievement.id]
+                                            .level],
                                     backgroundColor:
                                         Colors.black.withOpacity(0.1),
-                                    progressColor: user.appTheme.themeColor.light,
+                                    progressColor:
+                                        user.appTheme.themeColor.light,
                                   ),
                                 ),
                                 SizedBox(
                                   width: 15,
                                 ),
                                 Text(
-                                  user.achievements[achievement.id].progress.toString() +
+                                  user.achievements[achievement.id].progress
+                                          .toString() +
                                       "/" +
-                                      achievement.goal().toString(),
+                                      achievement.goals[user
+                                              .achievements[achievement.id]
+                                              .level]
+                                          .toString(),
                                   style: TextStyle(
                                       fontWeight: FontWeight.w800,
                                       color: Colors.black.withOpacity(0.4)),

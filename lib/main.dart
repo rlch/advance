@@ -1,10 +1,13 @@
 import 'package:advance/components/ui_elements_icons.dart';
+import 'package:advance/firebase/remote_config.dart';
 import 'package:advance/firebase/user_service.dart';
 import 'package:advance/pages/achievements.dart';
 import 'package:advance/pages/profile.dart';
 import 'package:advance/pages/shop.dart';
 import 'package:advance/pages/train.dart';
 import 'package:advance/screens/welcome/welcome.dart';
+import 'package:advance/screens/workout_custom.dart';
+import 'package:advance/screens/workout_custom_create.dart';
 import 'package:advance/styleguide.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -20,19 +23,28 @@ void main() async {
   FirebaseAnalytics analytics = FirebaseAnalytics();
   FirebaseUser firebaseUser = await checkAuthStatus();
 
+  RemoteConfigSetup remoteConfigSetup = await RemoteConfigSetup().setup();
+
   if (firebaseUser == null) {
-    runApp(MaterialApp(
-      navigatorObservers: [
-        new VillainTransitionObserver(),
-        FirebaseAnalyticsObserver(analytics: analytics)
-      ],
-      theme: AppTheme.rootTheme,
-      home: WelcomeScreen(),
+    runApp(Provider.value(
+      value: remoteConfigSetup,
+      child: MaterialApp(
+        navigatorObservers: [
+          new VillainTransitionObserver(),
+          FirebaseAnalyticsObserver(analytics: analytics)
+        ],
+        theme: AppTheme.rootTheme,
+        home: WelcomeScreen(),
+      ),
     ));
   } else {
+    print(firebaseUser.uid);
     runApp(MultiProvider(providers: [
+      Provider.value(
+        value: remoteConfigSetup,
+      ),
       StreamProvider<User>(
-          initialData: User.base(),
+          initialData: User.base(remoteConfigSetup),
           builder: (_) => UserService().streamUser(firebaseUser)),
     ], child: RootApp()));
   }
@@ -47,12 +59,47 @@ class RootApp extends StatefulWidget {
 
 class _RootAppState extends State<RootApp> {
   FirebaseAnalytics analytics = FirebaseAnalytics();
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(navigatorObservers: [
-      new VillainTransitionObserver(),
-      FirebaseAnalyticsObserver(analytics: analytics)
-    ], theme: Provider.of<User>(context).appTheme.mainTheme, home: MainController());
+    final User user = Provider.of<User>(context);
+    final RemoteConfigSetup remoteConfigSetup =
+        Provider.of<RemoteConfigSetup>(context);
+    remoteConfigSetup.permittedWorkouts.forEach((slug) {
+      if (!user.permittedWorkouts.contains(slug)) {
+        user.permittedWorkouts.add(slug);
+      }
+      user.permittedWorkouts.sort();
+    });
+    return MultiProvider(
+      providers: [
+        Provider.value(
+          value: remoteConfigSetup.permittedWorkouts,
+        ),
+        Provider.value(
+          value: remoteConfigSetup.workoutSteps,
+        ),
+        Provider.value(
+          value: remoteConfigSetup.workouts,
+        ),
+        Provider.value(
+          value: remoteConfigSetup.workoutAreas,
+        ),
+        Provider.value(
+          value: remoteConfigSetup.achievements,
+        ),
+        Provider.value(
+          value: remoteConfigSetup.shopItems,
+        )
+      ],
+      child: MaterialApp(
+          navigatorObservers: [
+            new VillainTransitionObserver(),
+            FirebaseAnalyticsObserver(analytics: analytics)
+          ],
+          theme: Provider.of<User>(context).appTheme.mainTheme,
+          home: MainController()),
+    );
   }
 }
 
@@ -140,6 +187,9 @@ class _MainControllerState extends State<MainController> {
           ),
           title: Text("Shop"))
     ];
+    if (user.firebaseUser == null) {
+      return Scaffold();
+    }
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
@@ -197,8 +247,15 @@ class _MainControllerState extends State<MainController> {
       floatingActionButton: Visibility(
         visible: (currentPageIndex == 0),
         child: FloatingActionButton(
+          heroTag: 'workout-create',
           backgroundColor: user.appTheme.themeColor.dark,
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => (user.customWorkouts != null &&
+                        user.customWorkouts.length > 0)
+                    ? WorkoutCustomScreen()
+                    : WorkoutCustomCreateScreen()));
+          },
           child: Icon(Icons.add),
         ),
       ),

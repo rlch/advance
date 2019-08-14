@@ -1,7 +1,4 @@
-enum ShopCategory {
-  workouts,
-  powerUps
-}
+enum ShopCategory { workouts, powerUps }
 
 class ShopItem {
   ShopCategory shopCategory;
@@ -10,38 +7,29 @@ class ShopItem {
   String iconPath;
   int price;
 
-  ShopItem({this.shopCategory, this.name, this.description, this.iconPath, this.price});
-}
+  ShopItem(
+      {this.shopCategory,
+      this.name,
+      this.description,
+      this.iconPath,
+      this.price});
 
-List<ShopItem> shopItems = [
-    ShopItem(
-        shopCategory: ShopCategory.workouts,
-        name: "Weights",
-        description: "Test tes ifjaeorfijeo fijaeorfi jerofij eroifj t",
-        price: 100,
-        iconPath: 'assets/workout_cards/weights.png'),
-    ShopItem(
-        shopCategory: ShopCategory.workouts,
-        name: "Weight loss",
-        description: "Test test",
-        price: 200,
-        iconPath: 'assets/workout_cards/weight_loss.png'),
-    ShopItem(
-        shopCategory: ShopCategory.powerUps,
-        name: "Bonfire",
-        description: "errwer test",
-        price: 250,
-        iconPath: 'assets/shop/bonfire.png'),
-    ShopItem(
-        shopCategory: ShopCategory.powerUps,
-        name: "Bonfire",
-        description: "errwer test",
-        price: 250,
-        iconPath: 'assets/shop/bonfire.png'),
-    ShopItem(
-        shopCategory: ShopCategory.powerUps,
-        name: "Bonfire",
-        description: "errwer test",
-        price: 250,
-        iconPath: 'assets/shop/bonfire.png')
-  ];
+  factory ShopItem.fromConfig(Map data) {
+    ShopCategory _stringToEnum(String shopCategory) {
+      switch (shopCategory) {
+        case "workouts":
+          return ShopCategory.workouts;
+        case "power_ups":
+          return ShopCategory.powerUps;
+      }
+      return null;
+    }
+
+    return ShopItem(
+        shopCategory: _stringToEnum(data['shop_category']),
+        name: data['name'],
+        description: data['description'],
+        iconPath: data['icon_path'],
+        price: data['price']);
+  }
+}

@@ -1,7 +1,9 @@
+import 'package:advance/screens/welcome/get_started.dart';
 import 'package:advance/screens/welcome/signup_form.dart';
 import 'package:advance/styleguide.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_villains/villains/villains.dart';
+import 'package:provider/provider.dart';
 
 class GoalsScreen extends StatefulWidget {
   GoalsScreen({Key key}) : super(key: key);
@@ -11,10 +13,11 @@ class GoalsScreen extends StatefulWidget {
 }
 
 class _GoalsScreenState extends State<GoalsScreen> {
-  int _selected = 0;
+  int _selected = 1;
 
   @override
   Widget build(BuildContext context) {
+    SignUpDetails signUpDetails = Provider.of<SignUpDetails>(context);
     return Material(
       child: Scaffold(
         body: Stack(children: <Widget>[
@@ -150,17 +153,30 @@ class _GoalsScreenState extends State<GoalsScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.arrow_forward,
-                      color: Colors.white,
-                      size: 40,
+                  child: Hero(
+                    tag: 'welcome-arrow',
+                    flightShuttleBuilder: (BuildContext flightContext,
+                            Animation<double> animation,
+                            HeroFlightDirection flightDirection,
+                            BuildContext fromHeroContext,
+                            BuildContext toHeroContext) =>
+                        Material(
+                            color: Colors.transparent,
+                            child: toHeroContext.widget),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.arrow_forward,
+                        color: Colors.white,
+                        size: 40,
+                      ),
+                      onPressed: () {
+                        signUpDetails.streakGoal = _selected;
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (BuildContext context) => Provider.value(
+                                value: signUpDetails,
+                                child: SignUpFormScreen())));
+                      },
                     ),
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              SignUpFormScreen()));
-                    },
                   ),
                 )
               ],

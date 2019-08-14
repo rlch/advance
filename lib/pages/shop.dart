@@ -1,6 +1,7 @@
 import 'package:advance/components/scroll_behaviour.dart';
 import 'package:advance/components/ui_elements_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../components/shop_items.dart';
 
 class Shop extends StatefulWidget {
@@ -13,6 +14,7 @@ class Shop extends StatefulWidget {
 class _ShopState extends State<Shop> {
   List<Widget> _buildShop(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final shopItems = Provider.of<List<ShopItem>>(context);
 
     List<Widget> shop = [];
 
@@ -32,6 +34,7 @@ class _ShopState extends State<Shop> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
               title: Text('Get ${item.name} for ${item.price} energy?'),
               actions: <Widget>[
                 FlatButton(
