@@ -129,12 +129,12 @@ class _TrainState extends State<Train> {
                         lineWidth: 12,
                         animation: true,
                         percent:
-                            user.workouts[workoutArea.id].experience.progress,
+                            user.workouts[workoutArea.slug].experience.progress,
                         circularStrokeCap: CircularStrokeCap.round,
                         progressColor: Colors.white,
                         backgroundColor: user.appTheme.circleDark,
                         center: Text(
-                          user.workouts[workoutArea.id].experience.level
+                          user.workouts[workoutArea.slug].experience.level
                               .toString(),
                           style: TextStyle(
                               fontFamily: 'WorkSans',

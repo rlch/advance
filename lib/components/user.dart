@@ -10,8 +10,8 @@ import 'package:intl/intl.dart';
 class User {
   final FirebaseUser firebaseUser;
   int energy, gender, height, weight;
-  Map<int, UserAchievement> achievements;
-  Map<int, UserWorkout> workouts;
+  Map<String, UserAchievement> achievements;
+  Map<String, UserWorkout> workouts;
   UserStreak streak;
   AppTheme appTheme;
   List<String> permittedWorkouts;
@@ -35,14 +35,14 @@ class User {
         null,
         0,
         Map.fromIterable(remoteConfigSetup.achievements,
-            key: (achievement) => (achievement as Achievement).id,
+            key: (achievement) => (achievement as Achievement).slug,
             value: (_) => UserAchievement(0, 0)),
         Map.fromIterable(remoteConfigSetup.workoutAreas.values,
-            key: (area) => (area as WorkoutArea).id,
+            key: (area) => (area as WorkoutArea).slug,
             value: (area) => UserWorkout(
                 Experience(100.0),
                 Map.fromIterable((area as WorkoutArea).workouts,
-                    key: (workout) => (workout as Workout).id,
+                    key: (workout) => (workout as Workout).slug,
                     value: (_) => UserExercise(0)))),
         UserStreak(0, 0, 0),
         AppTheme(themeColors[0]),
@@ -53,25 +53,25 @@ class User {
   }
 
   factory User.fromMap(FirebaseUser firebaseUser, Map data) {
-    Map<int, UserAchievement> _achievements = {};
-    Map<int, UserWorkout> _workouts = {};
+    Map<String, UserAchievement> _achievements = {};
+    Map<String, UserWorkout> _workouts = {};
     Map<String, UserStreakHistory> _history = {};
 
     print(AppTheme(themeColors[data['color']]).themeColor.light);
 
     for (final achievement
         in (data['achievements'] as Map<dynamic, dynamic>).entries) {
-      _achievements[int.parse(achievement.key)] = UserAchievement(
+      _achievements[achievement.key] = UserAchievement(
           achievement.value['level'], achievement.value['progress']);
     }
     for (final workout in (data['workouts'] as Map<dynamic, dynamic>).entries) {
-      Map<int, UserExercise> _exercises = {};
+      Map<String, UserExercise> _exercises = {};
       for (final exercise
           in (workout.value['exercises'] as Map<dynamic, dynamic>).entries) {
-        _exercises[int.parse(exercise.key)] =
+        _exercises[exercise.key] =
             UserExercise(exercise.value['times_completed']);
       }
-      _workouts[int.parse(workout.key)] =
+      _workouts[workout.key] =
           UserWorkout(Experience(workout.value['experience']), _exercises);
     }
     for (final history
@@ -109,7 +109,7 @@ class UserAchievement {
 
 class UserWorkout {
   Experience experience;
-  Map<int, UserExercise> exercises;
+  Map<String, UserExercise> exercises;
 
   UserWorkout(this.experience, this.exercises);
 }

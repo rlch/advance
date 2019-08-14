@@ -77,9 +77,9 @@ class WorkoutController {
       user.streak.current += 1;
     }
 
-    user.workouts[workoutArea.id].exercises
+    user.workouts[workoutArea.slug].exercises
         .updateAll((id, exercise) => UserExercise(exercise.timesCompleted + 1));
-    user.workouts[workoutArea.id].experience.amount += workout.experience;
+    user.workouts[workoutArea.slug].experience.amount += workout.experience;
   }
 
   WorkoutStep getWorkoutStepAtIndex(int index) {

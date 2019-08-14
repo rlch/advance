@@ -66,7 +66,7 @@ class _AchievementsState extends State<Achievements> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: _buildStars(
-                                  user.achievements[achievement.id].level),
+                                  user.achievements[achievement.slug].level),
                             )
                           ],
                         ),
@@ -92,7 +92,7 @@ class _AchievementsState extends State<Achievements> {
                             padding: const EdgeInsets.only(left: 15.0),
                             child: Text(
                               achievement.descriptions[
-                                  user.achievements[achievement.id].level],
+                                  user.achievements[achievement.slug].level],
                               style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 14,
@@ -106,10 +106,10 @@ class _AchievementsState extends State<Achievements> {
                                 Expanded(
                                   child: LinearPercentIndicator(
                                     lineHeight: 18,
-                                    percent: user.achievements[achievement.id]
+                                    percent: user.achievements[achievement.slug]
                                             .progress /
                                         achievement.goals[user
-                                            .achievements[achievement.id]
+                                            .achievements[achievement.slug]
                                             .level],
                                     backgroundColor:
                                         Colors.black.withOpacity(0.1),
@@ -121,11 +121,11 @@ class _AchievementsState extends State<Achievements> {
                                   width: 15,
                                 ),
                                 Text(
-                                  user.achievements[achievement.id].progress
+                                  user.achievements[achievement.slug].progress
                                           .toString() +
                                       "/" +
                                       achievement.goals[user
-                                              .achievements[achievement.id]
+                                              .achievements[achievement.slug]
                                               .level]
                                           .toString(),
                                   style: TextStyle(

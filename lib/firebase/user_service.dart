@@ -37,11 +37,11 @@ class UserService {
       },
       'workouts':
           Map<String, dynamic>.fromIterable(remoteConfigSetup.permittedWorkouts,
-              key: (slug) => remoteConfigSetup.workoutAreas[slug].id.toString(),
+              key: (slug) => remoteConfigSetup.workoutAreas[slug].slug,
               value: (slug) => {
                     'exercises': Map<String, dynamic>.fromIterable(
                         remoteConfigSetup.workoutAreas[slug].workouts,
-                        key: (workout) => workout.id.toString(),
+                        key: (workout) => workout.slug,
                         value: (workout) => {'times_completed': 0}),
                     'experience': 100.0
                   }),
@@ -99,15 +99,15 @@ class UserService {
         },
       },
       'workouts': {
-        workoutArea.id.toString(): {
+        workoutArea.slug: {
           'exercises': {
-            workout.id.toString(): {
-              'times_completed': doc.data['workouts'][workoutArea.id.toString()]
-                      ['exercises'][workout.id.toString()]['times_completed'] +
+            workout.slug: {
+              'times_completed': doc.data['workouts'][workoutArea.slug]
+                      ['exercises'][workout.slug]['times_completed'] +
                   1
             }
           },
-          "experience": doc.data['workouts'][workoutArea.id.toString()]
+          "experience": doc.data['workouts'][workoutArea.slug]
                   ['experience'] +
               workout.experience
         }

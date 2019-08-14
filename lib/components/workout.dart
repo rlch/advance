@@ -1,7 +1,10 @@
 import 'package:advance/components/exercise.dart';
+import 'package:slugify/slugify.dart';
 
 class Workout {
-  int id;
+  String get slug {
+    return Slugify(title, delimiter: '_');
+  }
   String title;
   Difficulty difficulty;
   List<WorkoutStep> workoutSteps;
@@ -36,6 +39,25 @@ class Workout {
     return base;
   }
 
+  factory Workout.custom(String slug, String title, List<Map<String, dynamic>> workoutSteps) {
+    WorkoutStep _buildWorkoutStep(Map<dynamic, dynamic> step) {
+      switch (step['type']) {
+        case "timed_set":
+          return TimedSet(title, Duration(seconds: step['duration']));
+        case "rep_set":
+          return RepSet(title, step['reps']);
+        case "rest":
+          return Rest(Duration(seconds: step['duration']));
+      }
+      return null;
+    }
+    
+    return Workout(
+      title,
+      workoutSteps.map((step) => _buildWorkoutStep(step)).toList(),
+    );
+  }
+
   factory Workout.fromConfig(Map data, Map<String, WorkoutStep> workoutSteps) {
 
     Difficulty _difficultyFromString(String difficulty) {
@@ -64,19 +86,16 @@ class Workout {
       return null;
     }
 
-    print(data['workout_steps']);
-
     return Workout(
-      data['id'],
       data['title'],
-      _difficultyFromString(data['difficulty']),
       (data['workout_steps'] as List<dynamic>).map((step) => _buildWorkoutStep(step as Map<dynamic, dynamic>)).toList(),
-      data['required_level'],
+      difficulty: _difficultyFromString(data['difficulty']),
+      requiredLevel: data['required_level'],
     );
   }
 
-  Workout(this.id, this.title, this.difficulty, this.workoutSteps,
-      this.requiredLevel,);
+  Workout(this.title, this.workoutSteps, {this.difficulty,
+      this.requiredLevel});
 
   String getDifficultyString() => difficulty.toString().split('.').last;
 }

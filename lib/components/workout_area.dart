@@ -1,7 +1,11 @@
 import 'package:advance/components/workout.dart';
+import 'package:slugify/slugify.dart';
 
 class WorkoutArea {
-  final int id;
+  String get slug {
+    return Slugify(title, delimiter: '_');
+  }
+
   String title;
   String description;
   List<Workout> workouts;
@@ -9,16 +13,16 @@ class WorkoutArea {
 
   factory WorkoutArea.fromConfig(Map data, Map<String, Workout> workouts) {
     return WorkoutArea(
-      id: data['id'],
       title: data['title'],
       description: data['description'],
-      workouts: (data['workouts'] as List<dynamic>).map((k) => workouts[k]).toList(),
+      workouts:
+          (data['workouts'] as List<dynamic>).map((k) => workouts[k]).toList(),
       imagePath: data['image_path'],
     );
   }
 
   WorkoutArea(
-      {this.id, this.title, this.description, this.workouts, this.imagePath});
+      {this.title, this.description, this.workouts, this.imagePath});
 }
 
 //gradientColors: [Colors.blue.shade400, Colors.lightBlue.shade200],

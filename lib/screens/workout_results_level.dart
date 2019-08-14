@@ -88,7 +88,7 @@ class _WorkoutResultsLevelScreenState extends State<WorkoutResultsLevelScreen>
                           lineWidth: 20,
                           animation: true,
                           percent: user
-                              .workouts[workoutController.workoutArea.id]
+                              .workouts[workoutController.workoutArea.slug]
                               .experience
                               .progress,
                           circularStrokeCap: CircularStrokeCap.round,
@@ -108,7 +108,7 @@ class _WorkoutResultsLevelScreenState extends State<WorkoutResultsLevelScreen>
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Text(
-                                user.workouts[workoutController.workoutArea.id]
+                                user.workouts[workoutController.workoutArea.slug]
                                     .experience.level
                                     .toString(),
                                 style: TextStyle(

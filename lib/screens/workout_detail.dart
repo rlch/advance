@@ -128,12 +128,12 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                       lineWidth: 12,
                       animation: false,
                       percent: user
-                          .workouts[widget.workoutArea.id].experience.progress,
+                          .workouts[widget.workoutArea.slug].experience.progress,
                       circularStrokeCap: CircularStrokeCap.round,
                       progressColor: Colors.white,
                       backgroundColor: user.appTheme.circleDark,
                       center: Text(
-                        user.workouts[widget.workoutArea.id].experience.level
+                        user.workouts[widget.workoutArea.slug].experience.level
                             .toString(),
                         style: TextStyle(
                             fontFamily: 'WorkSans',
@@ -214,7 +214,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 22),
               onPressed: () {
                 if (workout.requiredLevel <=
-                    user.workouts[widget.workoutArea.id].experience.level) {
+                    user.workouts[widget.workoutArea.slug].experience.level) {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -223,7 +223,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                 }
               },
               child: (workout.requiredLevel <=
-                      user.workouts[widget.workoutArea.id].experience.level)
+                      user.workouts[widget.workoutArea.slug].experience.level)
                   ? Text(
                       'Train',
                       style: TextStyle(fontSize: 20, fontFamily: "WorkSans"),

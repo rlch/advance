@@ -7,6 +7,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_picker/flutter_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:slugify/slugify.dart';
 
 class WorkoutCustomCreateScreen extends StatefulWidget {
   WorkoutCustomCreateScreen({Key key}) : super(key: key);
@@ -254,8 +255,12 @@ class _WorkoutCustomCreateScreenState extends State<WorkoutCustomCreateScreen> {
         ),
         backgroundColor: Colors.white,
         onPressed: () {
-          if (_titleKey.currentState.validate() && addedWorkoutSteps.length > 0) {
-            user.customWorkouts.add(Workout.fromConfig(data, workoutSteps));
+          if (_titleKey.currentState.validate() &&
+              addedWorkoutSteps.length > 0) {
+            user.customWorkouts.add(Workout.custom(
+                Slugify(_titleController.text.trim(), delimiter: '_'),
+                _titleController.text.trim(),
+                addedWorkoutSteps));
           }
         },
       ),
@@ -294,7 +299,7 @@ class _WorkoutCustomCreateScreenState extends State<WorkoutCustomCreateScreen> {
                             const EdgeInsets.only(right: 60, left: 20, top: 10),
                         child: Form(
                           key: _titleKey,
-                                                  child: TextFormField(
+                          child: TextFormField(
                             validator: (value) {
                               if (value.isEmpty) {
                                 return 'Please enter a title';
@@ -310,10 +315,10 @@ class _WorkoutCustomCreateScreenState extends State<WorkoutCustomCreateScreen> {
                                 contentPadding: EdgeInsets.all(10),
                                 focusColor: Colors.white,
                                 labelText: "Title of workout",
-                                errorStyle:
-                                    TextStyle(color: Colors.white, fontSize: 18),
-                                labelStyle:
-                                    TextStyle(color: Colors.white, fontSize: 18),
+                                errorStyle: TextStyle(
+                                    color: Colors.white, fontSize: 18),
+                                labelStyle: TextStyle(
+                                    color: Colors.white, fontSize: 18),
                                 focusedErrorBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(20),
                                     borderSide: BorderSide(
@@ -478,13 +483,22 @@ class _WorkoutCustomCreateScreenState extends State<WorkoutCustomCreateScreen> {
                                       switch (step['type']) {
                                         case 'timed_set':
                                           return _buildTimedSet(
-                                              TimedSet.fromJson(step), index);
+                                              TimedSet(
+                                                  step['title'],
+                                                  Duration(
+                                                      seconds:
+                                                          step['duration'])),
+                                              index);
                                         case 'rest':
                                           return _buildRest(
-                                              Rest.fromConfig(step), index);
+                                              Rest(Duration(
+                                                  seconds: step['duration'])),
+                                              index);
                                         case 'rep_set':
                                           return _buildRepSet(
-                                              RepSet.fromJson(step), index);
+                                              RepSet(
+                                                  step['title'], step['reps']),
+                                              index);
                                         default:
                                           return null;
                                       }

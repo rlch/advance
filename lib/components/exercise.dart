@@ -15,10 +15,6 @@ class TimedSet extends WorkoutStep {
     return TimedSet(workoutStep.title, Duration(seconds: data['duration']));
   }
 
-  factory TimedSet.fromJson(Map data) {
-    return TimedSet(data["title"], Duration(seconds: data["duration"]));
-  }
-
   Map<String, dynamic> toJson() {
     return {
       "type": "timed_set",
@@ -35,10 +31,6 @@ class RepSet extends WorkoutStep {
 
   factory RepSet.fromConfig(Map data, WorkoutStep workoutStep) {
     return RepSet(workoutStep.title, data['reps']);
-  }
-
-  factory RepSet.fromJson(Map data) {
-    return RepSet(data["title"], data["reps"]);
   }
 
   Map<String, dynamic> toJson() {
