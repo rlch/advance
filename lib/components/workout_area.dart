@@ -7,9 +7,9 @@ class WorkoutArea {
   List<Workout> workouts;
   String imagePath;
 
-  factory WorkoutArea.fromConfig(Map data, Map<String, Workout> workouts) {
+  factory WorkoutArea.fromConfig(String slug, Map data, Map<String, Workout> workouts) {
     return WorkoutArea(
-      slug: data.keys.first,
+      slug: slug,
       title: data['title'],
       description: data['description'],
       workouts:

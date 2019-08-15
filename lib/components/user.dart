@@ -1,6 +1,7 @@
 import 'package:advance/components/achievement.dart';
 import 'package:advance/components/exercise.dart';
 import 'package:advance/components/experience.dart';
+import 'package:advance/components/user_follow.dart';
 import 'package:advance/components/workout.dart';
 import 'package:advance/components/workout_area.dart';
 import 'package:advance/firebase/remote_config.dart';
@@ -17,6 +18,7 @@ class User {
   AppTheme appTheme;
   List<String> permittedWorkouts;
   Map<String, Workout> customWorkouts;
+  Map<String, UserFollow> following;
 
   User(
       this.firebaseUser,
@@ -29,7 +31,7 @@ class User {
       this.height,
       this.weight,
       this.permittedWorkouts,
-      {this.customWorkouts});
+      {this.customWorkouts, following});
 
   factory User.base(RemoteConfigSetup remoteConfigSetup) {
     return User(
@@ -37,7 +39,7 @@ class User {
         0,
         Map.fromIterable(remoteConfigSetup.achievements,
             key: (achievement) => (achievement as Achievement).slug,
-            value: (_) => UserAchievement(0, 0)),
+            value: (_) => UserAchievement(0, progress: 0)),
         Map.fromIterable(remoteConfigSetup.workoutAreas.values,
             key: (area) => (area as WorkoutArea).slug,
             value: (area) => UserWorkout(
@@ -45,13 +47,15 @@ class User {
                 Map.fromIterable((area as WorkoutArea).workouts,
                     key: (workout) => (workout as Workout).slug,
                     value: (_) => UserExercise(0)))),
-        UserStreak(0, 0, 0),
+        UserStreak(0, 0, current: 0),
         AppTheme(themeColors[0]),
         0,
         0,
         0,
         remoteConfigSetup.permittedWorkouts,
-        customWorkouts: {});
+        customWorkouts: {},
+        following: {}
+        );
   }
 
   factory User.fromMap(FirebaseUser firebaseUser, Map data) {
@@ -59,12 +63,11 @@ class User {
     Map<String, UserWorkout> _workouts = {};
     Map<String, UserStreakHistory> _history = {};
 
-    print(AppTheme(themeColors[data['color']]).themeColor.light);
-
     for (final achievement
         in (data['achievements'] as Map<dynamic, dynamic>).entries) {
       _achievements[achievement.key] = UserAchievement(
-          achievement.value['level'], achievement.value['progress']);
+          achievement.value['level'],
+          progress: achievement.value['progress']);
     }
     for (final workout in (data['workouts'] as Map<dynamic, dynamic>).entries) {
       Map<String, UserExercise> _exercises = {};
@@ -90,19 +93,15 @@ class User {
       }
     }
 
-    print(data['custom_workouts']);
-
     Map<String, Workout> _customWorkouts = {};
-    (data['custom_workouts'] as Map<dynamic, dynamic>).entries.forEach(
+    (data['custom_workouts'] as Map<dynamic, dynamic>)?.entries?.forEach(
         (customWorkout) => _customWorkouts[customWorkout.key] = Workout(
             customWorkout.key,
             customWorkout.value['title'],
-            (customWorkout.value['workout_steps']
-                    as List<dynamic>)
+            (customWorkout.value['workout_steps'] as List<dynamic>)
                 .map((step) => _mapToStep(step as Map<dynamic, dynamic>))
                 .toList()));
 
-    print(_customWorkouts);
     for (final history
         in (data['streak']['history'] as Map<dynamic, dynamic>).entries) {
       _history[DateFormat('dd-MM-yyyy').format(
@@ -117,8 +116,8 @@ class User {
         data['energy'],
         _achievements,
         _workouts,
-        UserStreak(data['streak']['current'], data['streak']['record'],
-            data['streak']['target'], history: _history),
+        UserStreak(data['streak']['record'], data['streak']['target'],
+            current: data['streak']['current'], history: _history),
         AppTheme(themeColors[data['color']]),
         data['gender'],
         data['height'],
@@ -126,7 +125,8 @@ class User {
         (data['permitted_workouts'] as List<dynamic>)
             .map((e) => e.toString())
             .toList(),
-        customWorkouts: _customWorkouts);
+        customWorkouts: _customWorkouts,
+        following: null);
   }
 }
 
@@ -134,7 +134,10 @@ class UserAchievement {
   int level;
   int progress;
 
-  UserAchievement(this.level, this.progress);
+  UserAchievement(
+    this.level, {
+    this.progress,
+  });
 }
 
 class UserWorkout {
@@ -156,7 +159,7 @@ class UserStreak {
   int target;
   Map<String, UserStreakHistory> history;
 
-  UserStreak(this.current, this.record, this.target, {this.history});
+  UserStreak(this.record, this.target, {this.current, this.history});
 }
 
 class UserStreakHistory {

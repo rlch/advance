@@ -56,7 +56,7 @@ class Workout {
     );
   }
 
-  factory Workout.fromConfig(Map data, Map<String, WorkoutStep> workoutSteps) {
+  factory Workout.fromConfig(String slug, Map data, Map<String, WorkoutStep> workoutSteps) {
 
     Difficulty _difficultyFromString(String difficulty) {
       switch (difficulty) {
@@ -85,7 +85,7 @@ class Workout {
     }
 
     return Workout(
-      data.keys.first,
+      slug,
       data['title'],
       (data['workout_steps'] as List<dynamic>).map((step) => _buildWorkoutStep(step as Map<dynamic, dynamic>)).toList(),
       difficulty: _difficultyFromString(data['difficulty']),

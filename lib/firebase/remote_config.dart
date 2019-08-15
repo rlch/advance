@@ -49,14 +49,14 @@ class RemoteConfigSetup {
   void _createWorkouts() {
     (json.decode(remoteConfig.getString('workouts')) as Map<String, dynamic>)
         .forEach((k, v) => workouts[k] =
-            Workout.fromConfig((v as Map<dynamic, dynamic>), workoutSteps));
+            Workout.fromConfig(k, (v as Map<dynamic, dynamic>), workoutSteps));
   }
 
   void _createWorkoutAreas() {
     (json.decode(remoteConfig.getString('workout_areas'))
             as Map<String, dynamic>)
         .forEach(
-            (k, v) => workoutAreas[k] = WorkoutArea.fromConfig(v, workouts));
+            (k, v) => workoutAreas[k] = WorkoutArea.fromConfig(k, v, workouts));
   }
 
   void _createAchievements() {
@@ -87,7 +87,6 @@ final Map<String, dynamic> _workoutStepsDefault = {
 
 final Map<String, dynamic> _workoutsDefault = {
   "arms_general": {
-    "id": 1,
     "title": "Arms General",
     "difficulty": "medium",
     "required_level": 1,
@@ -98,7 +97,6 @@ final Map<String, dynamic> _workoutsDefault = {
     ]
   },
   "arms_intense": {
-    "id": 2,
     "title": "Arms intense",
     "difficulty": "hard",
     "required_level": 3,
@@ -111,14 +109,12 @@ final Map<String, dynamic> _workoutsDefault = {
 
 final Map<String, dynamic> _workoutAreasDefault = {
   "arms": {
-    "id": 1,
     "title": "Arms",
     "description": "fufahuwfhauwhf",
     "workouts": ["arms_general", "arms_intense"],
     "image_path": "assets/workout_cards/arm.png"
   },
   "back": {
-    "id": 2,
     "title": "Back",
     "description": "faewfew",
     "workouts": ["arms_general"],
@@ -130,17 +126,24 @@ final List<String> _permittedWorkoutsDefault = ["arms", "back"];
 
 final List<dynamic> _achievementsDefault = [
   {
-    "id": 1,
+    "slug": "streak",
     "title": "Streak",
     "descriptions": ["desc0", "desc1", "desc2", "finished"],
     "goals": [1, 2, 3],
     "icon_path": "assets/shop/bonfire.png"
   },
   {
-    "id": 2,
+    "slug": "stre3ak",
     "title": "Strea3k",
     "descriptions": ["desc0", "desc1", "desc2", "finished"],
     "goals": [5, 2, 3],
+    "icon_path": "assets/shop/bonfire.png"
+  },
+  {
+    "slug": "Streak2",
+    "title": "Streak",
+    "descriptions": ["desc0", "desc1", "desc2", "finished"],
+    "goals": [1, 2, 3],
     "icon_path": "assets/shop/bonfire.png"
   }
 ];

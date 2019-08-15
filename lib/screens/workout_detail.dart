@@ -44,11 +44,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
           },
         ),
         centerTitle: true,
-        title: Material(
-            color: Colors.transparent,
-            child: Container(
-                child:
-                    Text(widget.workoutArea.title, style: AppTheme.heading))));
+        title: Container(
+            child: Text(widget.workoutArea.title, style: AppTheme.heading)));
 
     return WillPopScope(
       onWillPop: () async => false,
@@ -74,7 +71,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                   children: <Widget>[
                     Padding(
                       padding: EdgeInsets.fromLTRB(
-                          32, appBar.preferredSize.height, 8, 0),
+                          32, appBar.preferredSize.height, 30, 0),
                       child: Villain(
                         villainAnimation: VillainAnimation.fromBottom(
                             relativeOffset: 0.2,
@@ -168,12 +165,18 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
           children: <Widget>[
             Column(
               children: <Widget>[
-                Text(
-                  workout.title,
-                  style: TextStyle(
-                      fontFamily: "WorkSans",
-                      fontSize: 23,
-                      fontWeight: FontWeight.w500),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      workout.title,
+                      style: TextStyle(
+                          fontFamily: "WorkSans",
+                          fontSize: 23,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    //IconButton(icon: Icon(Icons.info_outline, color: Colors.black,),)
+                  ],
                 ),
                 SizedBox(
                   height: 5,
@@ -218,8 +221,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => WorkoutCountdownScreen(
-                              workout,
+                          builder: (context) => WorkoutCountdownScreen(workout,
                               workoutArea: widget.workoutArea)));
                 }
               },

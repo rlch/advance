@@ -21,17 +21,41 @@ class WorkoutCustomCreateScreen extends StatefulWidget {
 
 class _WorkoutCustomCreateScreenState extends State<WorkoutCustomCreateScreen> {
   List<Map<String, dynamic>> addedWorkoutSteps = [];
+  Map<String, WorkoutStep> _workoutSteps;
+  Map<String, WorkoutStep> workoutSteps;
   bool addStepClicked = false;
   String selected;
   TextEditingController _titleController = TextEditingController();
+  TextEditingController _searchController = TextEditingController();
   final _titleKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      String text = _searchController.text;
+      setState(() {
+        _workoutSteps = {};
+        if (text.isEmpty) {
+          _workoutSteps.addAll(workoutSteps);
+        } else {
+          _workoutSteps.addAll(workoutSteps);
+          _workoutSteps.removeWhere(
+              (_, v) => !v.title.toLowerCase().contains(text.toLowerCase()));
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context);
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    final workoutSteps = Provider.of<Map<String, WorkoutStep>>(context);
+    if (workoutSteps == null) {
+      workoutSteps = Provider.of<Map<String, WorkoutStep>>(context);
+      _workoutSteps = workoutSteps;
+    }
 
     Widget _buildRepSet(RepSet repSet, int index) {
       return ListTile(
@@ -275,7 +299,6 @@ class _WorkoutCustomCreateScreenState extends State<WorkoutCustomCreateScreen> {
                         _titleController.text.trim(),
                         addedWorkoutSteps)
               };
-              ;
               Navigator.of(context).pop();
             } else {
               user.customWorkouts[
@@ -309,64 +332,101 @@ class _WorkoutCustomCreateScreenState extends State<WorkoutCustomCreateScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
-                    IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        color: Colors.white,
-                        size: 40,
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
+                    addStepClicked
+                        ? SizedBox(width: 40, height: 40)
+                        : IconButton(
+                            icon: Icon(
+                              Icons.close,
+                              color: Colors.white,
+                              size: 40,
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
                     Flexible(
                       child: Padding(
                         padding:
                             const EdgeInsets.only(right: 60, left: 20, top: 10),
-                        child: Form(
-                          key: _titleKey,
-                          child: TextFormField(
-                            validator: (value) {
-                              if (value.isEmpty) {
-                                return 'Please enter a title';
-                              }
-                              return null;
-                            },
-                            controller: _titleController,
-                            cursorColor: Colors.white,
-                            style: TextStyle(
-                                color: Colors.white,
-                                decorationColor: Colors.white),
-                            decoration: InputDecoration(
-                                contentPadding: EdgeInsets.all(10),
-                                focusColor: Colors.white,
-                                labelText: "Title of workout",
-                                errorStyle: TextStyle(
-                                    color: Colors.white, fontSize: 18),
-                                labelStyle: TextStyle(
-                                    color: Colors.white, fontSize: 18),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    borderSide: BorderSide(
-                                        color: Colors.white, width: 4)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    borderSide: BorderSide(
-                                        color: Colors.white, width: 4)),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    borderSide: BorderSide(
-                                        color: Colors.white, width: 4)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    borderSide: BorderSide(
-                                        color: Colors.white, width: 4)),
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    borderSide: BorderSide(
-                                        color: Colors.white, width: 20))),
-                          ),
-                        ),
+                        child: addStepClicked
+                            ? TextFormField(
+                                controller: _searchController,
+                                cursorColor: Colors.white,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    decorationColor: Colors.white),
+                                decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.all(10),
+                                    focusColor: Colors.white,
+                                    labelText: "Search for exercise",
+                                    labelStyle: TextStyle(
+                                        color: Colors.white, fontSize: 18),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                        borderSide: BorderSide(
+                                            color: Colors.white, width: 4)),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                        borderSide: BorderSide(
+                                            color: Colors.white, width: 4)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                        borderSide: BorderSide(
+                                            color: Colors.white, width: 4)),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                        borderSide: BorderSide(
+                                            color: Colors.white, width: 20))),
+                              )
+                            : Form(
+                                key: _titleKey,
+                                child: TextFormField(
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return '';
+                                    }
+                                    return null;
+                                  },
+                                  controller: _titleController,
+                                  cursorColor: Colors.white,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      decorationColor: Colors.white),
+                                  decoration: InputDecoration(
+                                      errorMaxLines: 1,
+                                      errorStyle: TextStyle(height: 0),
+                                      contentPadding: EdgeInsets.all(10),
+                                      focusColor: Colors.white,
+                                      labelText: "Title of workout",
+                                      labelStyle: TextStyle(
+                                          color: Colors.white, fontSize: 18),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          borderSide: BorderSide(
+                                              color: Colors.white, width: 4)),
+                                      errorBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          borderSide: BorderSide(
+                                              color: Colors.white, width: 4)),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          borderSide: BorderSide(
+                                              color: Colors.white, width: 4)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          borderSide: BorderSide(
+                                              color: Colors.white, width: 4)),
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          borderSide: BorderSide(
+                                              color: Colors.white, width: 20))),
+                                ),
+                              ),
                       ),
                     ),
                   ],
@@ -405,11 +465,11 @@ class _WorkoutCustomCreateScreenState extends State<WorkoutCustomCreateScreen> {
                                   ),
                                   Expanded(
                                     child: ListView.builder(
-                                      itemCount: workoutSteps.length,
+                                      itemCount: _workoutSteps.length,
                                       itemBuilder: (_, i) {
                                         return ListTile(
                                           title: AutoSizeText(
-                                            workoutSteps.values
+                                            _workoutSteps.values
                                                 .toList()[i]
                                                 .title,
                                             maxFontSize: 16,
@@ -429,10 +489,10 @@ class _WorkoutCustomCreateScreenState extends State<WorkoutCustomCreateScreen> {
                                                 },
                                                 value: json.encode({
                                                   "type": "timed_set",
-                                                  "title": workoutSteps.values
+                                                  "title": _workoutSteps.values
                                                       .toList()[i]
                                                       .title,
-                                                  "duration": 0
+                                                  "duration": 30
                                                 }),
                                                 groupValue: selected,
                                               ),
@@ -446,7 +506,7 @@ class _WorkoutCustomCreateScreenState extends State<WorkoutCustomCreateScreen> {
                                                 },
                                                 value: json.encode({
                                                   "type": "rep_set",
-                                                  "title": workoutSteps.values
+                                                  "title": _workoutSteps.values
                                                       .toList()[i]
                                                       .title,
                                                   "reps": 1
@@ -496,10 +556,6 @@ class _WorkoutCustomCreateScreenState extends State<WorkoutCustomCreateScreen> {
                                   Expanded(
                                     child: ReorderableListView(
                                       onReorder: (oldIndex, newIndex) {
-                                        print((addedWorkoutSteps
-                                            .map((f) => f["title"])
-                                            .toList()));
-                                        print(newIndex);
                                         if (newIndex <
                                             addedWorkoutSteps.length) {
                                           var tmp = addedWorkoutSteps[oldIndex];
@@ -509,9 +565,6 @@ class _WorkoutCustomCreateScreenState extends State<WorkoutCustomCreateScreen> {
                                             addedWorkoutSteps[newIndex] = tmp;
                                           });
                                         }
-                                        print((addedWorkoutSteps
-                                            .map((f) => f["title"])
-                                            .toList()));
                                       },
                                       children: List.generate(
                                           addedWorkoutSteps.length, (index) {
@@ -580,7 +633,7 @@ class _WorkoutCustomCreateScreenState extends State<WorkoutCustomCreateScreen> {
                                             setState(() {
                                               addedWorkoutSteps.add({
                                                 "type": "rest",
-                                                "duration": 0
+                                                "duration": 30
                                               });
                                             });
                                           },

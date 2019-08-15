@@ -39,6 +39,12 @@ dependencies:
   direct_select_flutter: ^1.0.4
   flutter_picker: ^1.0.13
   slugify: ^1.0.0
+  firebase_storage: ^3.0.5
+  in_app_purchase: ^0.2.1
+  sticky_headers: "^0.1.8"
+  cache_image:
+    git:
+      url: https://github.com/rlch/flutter_cache_image.git
 
 
   # The following adds the Cupertino Icons font to your application.

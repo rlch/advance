@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:advance/components/scroll_behaviour.dart';
 import 'package:advance/components/ui_elements_icons.dart';
+import 'package:cache_image/cache_image.dart';
 import 'package:flutter/material.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:provider/provider.dart';
 import '../components/shop_items.dart';
 
@@ -12,11 +16,31 @@ class Shop extends StatefulWidget {
 }
 
 class _ShopState extends State<Shop> {
+  StreamSubscription<List<PurchaseDetails>> _subscription;
+  bool inAppAvailable = false;
+
+  @override
+  void initState() {
+    final Stream purchaseUpdates = InAppPurchaseConnection.instance.purchaseUpdatedStream;
+    _subscription = purchaseUpdates.listen((purchases) {
+      //_handlePurchaseUpdates(purchases);
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+
   List<Widget> _buildShop(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final shopItems = Provider.of<List<ShopItem>>(context);
 
     List<Widget> shop = [];
+
+    InAppPurchaseConnection.instance.isAvailable().then((isAvailable) => inAppAvailable = isAvailable);
 
     String _getShopCategoryString(ShopCategory shopCategory) {
       switch (shopCategory) {
@@ -34,7 +58,8 @@ class _ShopState extends State<Shop> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
               title: Text('Get ${item.name} for ${item.price} energy?'),
               actions: <Widget>[
                 FlatButton(
@@ -91,8 +116,9 @@ class _ShopState extends State<Shop> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
-                    Image.asset(
-                      shopItem.iconPath,
+                    CacheImage.firebase(
+                      prefix: 'gs://advance-72a11.appspot.com/',
+                      path: shopItem.iconPath,
                       width: screenWidth * 0.2,
                     ),
                     SizedBox(

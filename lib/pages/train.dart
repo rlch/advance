@@ -4,6 +4,7 @@ import 'package:advance/components/workout_area.dart';
 import 'package:advance/screens/workout_detail.dart';
 import 'package:advance/styleguide.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cache_image/cache_image.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +28,8 @@ class _TrainState extends State<Train> {
   Widget _buildSlider(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     List<String> permittedWorkouts = Provider.of<List<String>>(context);
-    Map<String, WorkoutArea> workoutAreas = Provider.of<Map<String, WorkoutArea>>(context);
+    Map<String, WorkoutArea> workoutAreas =
+        Provider.of<Map<String, WorkoutArea>>(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -39,7 +41,8 @@ class _TrainState extends State<Train> {
               controller: pageController,
               itemCount: permittedWorkouts.length,
               itemBuilder: (BuildContext context, int index) {
-                return _buildCard(context, workoutAreas[permittedWorkouts[index]]);
+                return _buildCard(
+                    context, workoutAreas[permittedWorkouts[index]]);
               },
             ),
           ),
@@ -86,11 +89,14 @@ class _TrainState extends State<Train> {
             Padding(
               padding: const EdgeInsets.only(bottom: 100.0),
               child: Align(
-                  alignment: Alignment.center,
-                  child: Container(
+                alignment: Alignment.center,
+                child: Container(
                     width: screenWidth * 0.5,
-                    child: Image.asset(workoutArea.imagePath),
-                  )),
+                    child: CacheImage.firebase(
+                      prefix: 'gs://advance-72a11.appspot.com/',
+                      path: workoutArea.imagePath,
+                    )),
+              ),
             ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -155,7 +161,7 @@ class _TrainState extends State<Train> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Center(child:  _buildSlider(context)),
+      child: Center(child: _buildSlider(context)),
     );
   }
 }

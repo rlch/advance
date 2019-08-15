@@ -29,6 +29,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
+  cache_image:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "3fd57a1325fe5986c07ba3c4bb9f27c678a7f8b0"
+      url: "https://github.com/rlch/flutter_cache_image.git"
+    source: git
+    version: "0.0.3"
   charcode:
     dependency: transitive
     description:
@@ -106,6 +115,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.0+5"
+  firebase_storage:
+    dependency: "direct main"
+    description:
+      name: firebase_storage
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.5"
   fl_chart:
     dependency: "direct main"
     description:
@@ -165,6 +181,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.1"
+  in_app_purchase:
+    dependency: "direct main"
+    description:
+      name: in_app_purchase
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.1"
   intl:
     dependency: "direct main"
     description:
@@ -172,6 +195,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.15.8"
+  json_annotation:
+    dependency: transitive
+    description:
+      name: json_annotation
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.4.0"
   keyboard_visibility:
     dependency: "direct main"
     description:
@@ -200,6 +230,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.6.2"
+  path_provider:
+    dependency: transitive
+    description:
+      name: path_provider
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   pedantic:
     dependency: transitive
     description:
@@ -268,6 +305,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.9.3"
+  sticky_headers:
+    dependency: "direct main"
+    description:
+      name: sticky_headers
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.8"
   stream_channel:
     dependency: transitive
     description:

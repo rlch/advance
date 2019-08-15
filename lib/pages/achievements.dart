@@ -1,6 +1,7 @@
 import 'package:advance/components/achievement.dart';
 import 'package:advance/components/scroll_behaviour.dart';
 import 'package:advance/components/user.dart';
+import 'package:cache_image/cache_image.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
@@ -42,6 +43,7 @@ class _AchievementsState extends State<Achievements> {
             return Padding(
               padding: const EdgeInsets.only(top: 30.0, left: 30, right: 20),
               child: Container(
+                height: 120,
                 child: Row(
                   children: <Widget>[
                     Container(
@@ -56,8 +58,9 @@ class _AchievementsState extends State<Achievements> {
                         padding: const EdgeInsets.all(12.0),
                         child: Column(
                           children: <Widget>[
-                            Image.asset(
-                              achievement.iconPath,
+                            CacheImage.firebase(
+                              prefix: 'gs://advance-72a11.appspot.com/',
+                              path: achievement.iconPath,
                               width: screenWidth * 0.15,
                             ),
                             SizedBox(

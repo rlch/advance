@@ -52,8 +52,6 @@ class _StreakChartState extends State<StreakChart> {
         calculateDaysInterval(date.subtract(Duration(days: 6)), date)
             .map((datetime) => format.format(datetime))
             .toList();
-    print(widget.history);
-    print(daysFormatted);
 
     for (final key in daysFormatted) {
       if (widget.history.containsKey(key)) {

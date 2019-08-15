@@ -43,7 +43,7 @@ class _WorkoutCustomScreenState extends State<WorkoutCustomScreen> {
         centerTitle: true,
         title: Material(
             color: Colors.transparent,
-            child: Container(child: Text("Create", style: AppTheme.heading))));
+            child: Container(child: Text("Custom", style: AppTheme.heading))));
 
     return WillPopScope(
       onWillPop: () async => false,
@@ -91,7 +91,7 @@ class _WorkoutCustomScreenState extends State<WorkoutCustomScreen> {
                         secondaryVillainAnimation: VillainAnimation.fade(),
                         animateExit: true,
                         child: Center(
-                          child: Text("Create your own workout",
+                          child: Text("Your custom workouts",
                               style: TextStyle(
                                   fontFamily: "WorkSans",
                                   fontSize: 20,
