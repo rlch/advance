@@ -24,6 +24,7 @@ dependencies:
   firebase_auth: ^0.14.0+1
   firebase_admob: ^0.9.0+3
   firebase_remote_config: ^0.2.0+5
+  cloud_functions: ^0.4.1
   cloud_firestore: ^0.12.8
   provider: ^3.0.0+1
   keyboard_visibility: any
@@ -42,6 +43,8 @@ dependencies:
   firebase_storage: ^3.0.5
   in_app_purchase: ^0.2.1
   sticky_headers: "^0.1.8"
+  audioplayer: ^0.5.2
+  flutter_tts: ^0.2.6
   cache_image:
     git:
       url: https://github.com/rlch/flutter_cache_image.git

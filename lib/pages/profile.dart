@@ -1,6 +1,9 @@
+import 'package:advance/components/ui_elements_icons.dart';
 import 'package:advance/components/user.dart';
+import 'package:advance/components/user_follow.dart';
 import 'package:advance/firebase/user_service.dart';
 import 'package:advance/styleguide.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +18,9 @@ class _ProfileState extends State<Profile> {
     User user = Provider.of<User>(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    TextEditingController _usernameController = TextEditingController();
+    TextEditingController _emailController = TextEditingController();
+
+    print(user.following);
 
     return DefaultTabController(
       length: 2,
@@ -248,41 +253,99 @@ class _ProfileState extends State<Profile> {
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.endFloat,
               floatingActionButton: FloatingActionButton.extended(
-                  onPressed: () {
-                    onTap:
-                    () {
-                      return showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20))),
-                                content: TextField(
-                                  controller: _usernameController,
-                                  decoration: InputDecoration(
-                                      hintText: "Friend's email"),
+                onPressed: () {
+                  return showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20))),
+                            content: TextField(
+                              controller: _emailController,
+                              decoration:
+                                  InputDecoration(hintText: "Friend's email"),
+                            ),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: new Text(
+                                  'Cancel',
+                                  style: TextStyle(color: Colors.grey),
                                 ),
-                                actions: <Widget>[
-                                  FlatButton(
-                                    child: new Text(
-                                      'Cancel',
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                  FlatButton(
-                                    child: new Text('Submit'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  )
-                                ],
-                              ));
-                    };
-                  },
-                  label: Text('Add Friend')),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              FlatButton(
+                                child: new Text('Submit'),
+                                onPressed: () async {
+                                  final HttpsCallable checkEmail =
+                                      CloudFunctions.instance.getHttpsCallable(
+                                    functionName: 'followUser',
+                                  );
+                                  try {
+                                    dynamic res = await checkEmail.call({
+                                      'email': _emailController.text.trim()
+                                    });
+                                    if (user.following == null) {
+                                      user.following = {};
+                                    }
+                                    print(res);
+                                     setState(() {
+                                      user.following[res.data['uid']] =
+                                          UserFollow.fromMap(
+                                              res.data['uid'], res.data);
+                                    });
+                                    await UserService().follow(
+                                        res.data['uid'], user.firebaseUser.uid);
+                                  } catch (e) {
+                                    print(e);
+                                  }
+                                  Navigator.of(context).pop();
+                                },
+                              )
+                            ],
+                          ));
+                },
+                label: Text('Add Friend'),
+                backgroundColor: user.appTheme.themeColor.primary,
+              ),
+              body: ListView.builder(
+                itemCount: user.following?.length ?? 0,
+                itemBuilder: (context, index) {
+                  String slug = user.following.keys.toList()[index];
+                  print(user.following[slug].email);
+                  return ListTile(
+                    title: Text(
+                      user.following[slug].nickname ??
+                          user.following[slug].email,
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    leading: CircleAvatar(
+                      backgroundColor: user.appTheme.themeColor.primary,
+                      child: Icon(Icons.person),
+                    ),
+                    trailing: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        IconButton(
+                            icon: Icon(UiElements.fire),
+                            tooltip: 'Streak',
+                            onPressed: () {},
+                            color: Colors.red),
+                        Text(
+                          user.following[slug].streak.toString(),
+                          style: TextStyle(
+                              fontFamily: 'WorkSans',
+                              fontWeight: FontWeight.w800,
+                              fontSize: 17,
+                              color: Colors.red),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             )
           ],
         ),

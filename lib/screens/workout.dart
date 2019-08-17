@@ -7,6 +7,7 @@ import 'package:advance/screens/timed_set.dart';
 import 'package:advance/screens/workout_results_ad.dart';
 import 'package:advance/screens/workout_results_level.dart';
 import 'package:advance/screens/workout_results_streak.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:quiver/async.dart';
@@ -35,13 +36,24 @@ class WorkoutController {
     );
   }
 
+  FlutterTts flutterTts = FlutterTts();
+
   Future<Widget> beginNextWorkoutStep() async {
+
+    List<dynamic> languages = await flutterTts.getLanguages;
+    if (languages.contains("en-AU")) {
+      await flutterTts.setLanguage("en-AU");
+    } else {
+      await flutterTts.setLanguage("en-US");
+    }
+
     if (currentWorkoutStepIndex == null) {
       currentWorkoutStepIndex = 0;
     } else {
       currentWorkoutStepIndex += 1;
     }
     if (currentWorkoutStepIndex < workout.workoutSteps.length) {
+      flutterTts.speak(workout.workoutSteps[currentWorkoutStepIndex].title);
       _currentWorkoutStep = workout.workoutSteps[currentWorkoutStepIndex];
       if (_currentWorkoutStep is TimedSet) {
         return _provider(TimedSetScreen());
@@ -84,9 +96,10 @@ class WorkoutController {
             history.experience + workout.experience,
             history.workoutsCompleted + 1),
         ifAbsent: () => UserStreakHistory(date, workout.experience, 1));
+
     if (history.workoutsCompleted == user.streak.target) {
       user.streak.current += 1;
-    }
+    } 
 
     user.workouts[workoutArea.slug].exercises
         .updateAll((id, exercise) => UserExercise(exercise.timesCompleted + 1));

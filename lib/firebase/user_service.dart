@@ -18,9 +18,10 @@ class UserService {
         .map((snap) => User.fromMap(firebaseUser, snap.data));
   }
 
-  Future<void> createUser(String uid, SignUpDetails signUpDetails,
+  Future<void> createUser(FirebaseUser firebaseUser, SignUpDetails signUpDetails,
       RemoteConfigSetup remoteConfigSetup) async {
-    await Firestore.instance.collection('users').document(uid).setData({
+    await Firestore.instance.collection('users').document(firebaseUser.uid).setData({
+      "email": firebaseUser.email,
       'gender': signUpDetails.gender,
       'weight': signUpDetails.weight,
       'height': signUpDetails.height,
@@ -118,6 +119,12 @@ class UserService {
       String uid, Map<String, dynamic> workout) async {
     await Firestore.instance.collection('users').document(uid).setData({
       'custom_workouts': workout,
+    }, merge: true);
+  }
+
+  Future<void> follow(String friend_uid, String user_uid) async {
+    await Firestore.instance.collection('users').document(user_uid).setData({
+      'following': {friend_uid: true}
     }, merge: true);
   }
 }

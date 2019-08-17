@@ -6,11 +6,13 @@ import 'package:advance/components/workout.dart';
 import 'package:advance/components/workout_area.dart';
 import 'package:advance/firebase/remote_config.dart';
 import 'package:advance/styleguide.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
 class User {
   final FirebaseUser firebaseUser;
+  String email;
   int energy, gender, height, weight;
   Map<String, UserAchievement> achievements;
   Map<String, UserWorkout> workouts;
@@ -22,6 +24,7 @@ class User {
 
   User(
       this.firebaseUser,
+      this.email,
       this.energy,
       this.achievements,
       this.workouts,
@@ -31,11 +34,13 @@ class User {
       this.height,
       this.weight,
       this.permittedWorkouts,
-      {this.customWorkouts, following});
+      {this.customWorkouts,
+      this.following});
 
   factory User.base(RemoteConfigSetup remoteConfigSetup) {
     return User(
         null,
+        '',
         0,
         Map.fromIterable(remoteConfigSetup.achievements,
             key: (achievement) => (achievement as Achievement).slug,
@@ -54,15 +59,14 @@ class User {
         0,
         remoteConfigSetup.permittedWorkouts,
         customWorkouts: {},
-        following: {}
-        );
+        following: {});
   }
 
   factory User.fromMap(FirebaseUser firebaseUser, Map data) {
     Map<String, UserAchievement> _achievements = {};
     Map<String, UserWorkout> _workouts = {};
     Map<String, UserStreakHistory> _history = {};
-
+    Map<String, UserFollow> _following = {};
     for (final achievement
         in (data['achievements'] as Map<dynamic, dynamic>).entries) {
       _achievements[achievement.key] = UserAchievement(
@@ -111,8 +115,16 @@ class User {
           history.value['experience'],
           history.value['workouts_completed']);
     }
+
+    (data['following'] as Map<dynamic, dynamic>)?.keys?.forEach((uid) {
+      Firestore.instance.collection('users').document(uid).get().then((doc) {
+        _following[uid] = UserFollow.fromMap(uid, doc.data);
+      });
+    });
+
     return User(
         firebaseUser,
+        firebaseUser.email,
         data['energy'],
         _achievements,
         _workouts,
@@ -126,7 +138,7 @@ class User {
             .map((e) => e.toString())
             .toList(),
         customWorkouts: _customWorkouts,
-        following: null);
+        following: _following);
   }
 }
 

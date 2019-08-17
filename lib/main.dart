@@ -10,9 +10,11 @@ import 'package:advance/screens/workout_custom.dart';
 import 'package:advance/screens/workout_custom_create.dart';
 import 'package:advance/styleguide.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'components/user.dart';
 import 'firebase/auth.dart';
@@ -21,7 +23,7 @@ import 'package:flutter_villains/villains/villains.dart';
 
 void main() async {
   FirebaseAnalytics analytics = FirebaseAnalytics();
-  //await FirebaseAuth.instance.signOut();
+  await FirebaseAuth.instance.signOut();
   FirebaseUser firebaseUser = await checkAuthStatus();
 
   RemoteConfigSetup remoteConfigSetup = await RemoteConfigSetup().setup();
@@ -72,6 +74,7 @@ class _RootAppState extends State<RootApp> {
       }
       user.permittedWorkouts.sort();
     });
+
     return MultiProvider(
       providers: [
         Provider.value(
@@ -142,6 +145,28 @@ class _MainControllerState extends State<MainController> {
   @override
   Widget build(BuildContext context) {
     var user = Provider.of<User>(context);
+    DateTime now = DateTime.now();
+    DateTime date = DateTime(now.year, now.month, now.day);
+    DateTime yesterday = date.subtract(Duration(days: 1));
+    DateFormat format = DateFormat('dd-MM-yyyy');
+    print(user.firebaseUser);
+    if (user.firebaseUser?.uid != null) {
+      if (user.streak.current != 0 && user.streak.current != 1 && (user.streak.history == null ||
+          user.streak.history.containsKey(format.format(yesterday)) ||
+          user.streak.history[format.format(yesterday)] == null ||
+          user.streak.history[format.format(yesterday)].workoutsCompleted ==
+              user.streak.target)) {
+        Firestore.instance
+            .collection('users')
+            .document(user.firebaseUser.uid)
+            .setData({
+          'streak': {
+            'current': 0,
+          }
+        }, merge: true);
+        print('cleared streak');
+      }
+    }
     var bubbleItems = <BubbleBottomBarItem>[
       BubbleBottomBarItem(
           backgroundColor: user.appTheme.themeColor.dark,
@@ -203,17 +228,33 @@ class _MainControllerState extends State<MainController> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   IconButton(
-                      icon: Icon(UiElements.fire),
-                      tooltip: 'Streak',
-                      onPressed: () {},
-                      color: Colors.red),
+                    icon: Icon(UiElements.fire),
+                    tooltip: 'Streak',
+                    onPressed: () {},
+                    color: ((user?.streak?.history[format.format(date)]
+                                    ?.workoutsCompleted !=
+                                null) &&
+                            (user.streak.history[format.format(date)]
+                                    .workoutsCompleted >=
+                                user.streak.target))
+                        ? Colors.red
+                        : user.appTheme.iconGrey,
+                  ),
                   Text(
                     user.streak.current.toString(),
                     style: TextStyle(
                         fontFamily: 'WorkSans',
                         fontWeight: FontWeight.w800,
                         fontSize: 17,
-                        color: Colors.red),
+                        color: ((user?.streak?.history[format.format(date)]
+                                    ?.workoutsCompleted !=
+                                null) &&
+                            (user.streak.history[format.format(date)]
+                                    .workoutsCompleted >=
+                                user.streak.target))
+                        ? Colors.red
+                        : user.appTheme.iconGrey,
+                  ),
                   ),
                 ],
               ),

@@ -78,7 +78,6 @@ class _GoalsScreenState extends State<GoalsScreen> {
                                 _selected = 1;
                               });
                             },
-                            leading: Icon(Icons.aspect_ratio),
                             title: Text(
                               "Casual",
                               style: TextStyle(
@@ -110,7 +109,6 @@ class _GoalsScreenState extends State<GoalsScreen> {
                                 _selected = 2;
                               });
                             },
-                            leading: Icon(Icons.aspect_ratio),
                             title: Text(
                               "Hero",
                               style: TextStyle(
@@ -135,7 +133,6 @@ class _GoalsScreenState extends State<GoalsScreen> {
                                 _selected = 3;
                               });
                             },
-                            leading: Icon(Icons.aspect_ratio),
                             title: Text(
                               "Legend",
                               style: TextStyle(

@@ -20,9 +20,12 @@ class RemoteConfigSetup {
     remoteConfig = await RemoteConfig.instance;
     await remoteConfig.setConfigSettings(RemoteConfigSettings());
     await remoteConfig.setDefaults(_remoteConfigDefaults);
-    await remoteConfig.fetch(expiration: Duration(seconds: 0));
-    await remoteConfig.activateFetched();
-
+    try {
+      await remoteConfig.fetch(expiration: Duration(seconds: 0));
+      await remoteConfig.activateFetched();
+    } catch (exception) {
+      print(exception);
+    }
     _createPermittedWorkouts();
     _createWorkoutSteps();
     _createWorkouts();
@@ -77,17 +80,22 @@ final Map<String, dynamic> _remoteConfigDefaults = {
   'workouts': _workoutsDefault,
   'workout_steps': _workoutStepsDefault,
   'permitted_workouts': _permittedWorkoutsDefault,
-  'achievements': _achievementsDefault
+  'achievements': _achievementsDefault,
+  'shop_items': _shopItemsDefault
 };
 
 final Map<String, dynamic> _workoutStepsDefault = {
   "sit_ups": {"title": "Sit Ups"},
-  "push_ups": {"title": "Push Ups"}
+  "push_ups": {"title": "Push Ups"},
+  "something": {"title": "Sitweafwe Ups"},
+  "fefw": {"title": "Push fUps"},
+  "efewf": {"title": "ewf Ups"},
+  "wefwef": {"title": "fefe Ups"}
 };
 
 final Map<String, dynamic> _workoutsDefault = {
   "arms_general": {
-    "title": "Arms General",
+    "title": "Arms Generale",
     "difficulty": "medium",
     "required_level": 1,
     "workout_steps": [
@@ -112,13 +120,13 @@ final Map<String, dynamic> _workoutAreasDefault = {
     "title": "Arms",
     "description": "fufahuwfhauwhf",
     "workouts": ["arms_general", "arms_intense"],
-    "image_path": "assets/workout_cards/arm.png"
+    "image_path": "workout_areas/arm.png"
   },
   "back": {
     "title": "Back",
     "description": "faewfew",
     "workouts": ["arms_general"],
-    "image_path": "assets/workout_cards/back.png"
+    "image_path": "workout_areas/back.png"
   }
 };
 
@@ -130,20 +138,58 @@ final List<dynamic> _achievementsDefault = [
     "title": "Streak",
     "descriptions": ["desc0", "desc1", "desc2", "finished"],
     "goals": [1, 2, 3],
-    "icon_path": "assets/shop/bonfire.png"
+    "icon_path": "shop/bonfire.png"
   },
   {
     "slug": "stre3ak",
     "title": "Strea3k",
     "descriptions": ["desc0", "desc1", "desc2", "finished"],
     "goals": [5, 2, 3],
-    "icon_path": "assets/shop/bonfire.png"
+    "icon_path": "shop/bonfire.png"
   },
   {
     "slug": "Streak2",
     "title": "Streak",
     "descriptions": ["desc0", "desc1", "desc2", "finished"],
     "goals": [1, 2, 3],
-    "icon_path": "assets/shop/bonfire.png"
+    "icon_path": "shop/bonfire.png"
+  }
+];
+
+final List<dynamic> _shopItemsDefault = [
+  {
+    "shop_category": "workouts",
+    "name": "Weights",
+    "description": "aiewfoaw ijofiw jfoweifjoew",
+    "price": 100,
+    "icon_path": "workout_areas/weights.png"
+  },
+  {
+    "shop_category": "workouts",
+    "name": "Weight loss",
+    "description": "aiewfoaw ijofiw jfoweifjoew",
+    "price": 500,
+    "icon_path": "workout_areas/weight_loss.png"
+  },
+  {
+    "shop_category": "power_ups",
+    "name": "Bonfire",
+    "description": "aiewfoaw ijofiw jfoweifjoew",
+    "price": 300,
+    "icon_path": "shop/bonfire.png"
+  },
+  {
+    "shop_category": "power_ups",
+    "name": "Bonfire",
+    "description": "aiewfoaw ijofiw jfoweifjoew",
+    "price": 300,
+    "icon_path": "shop/bonfire.png"
+  },
+  {
+    "shop_category": "power_ups",
+    "name": "Bonfire",
+    "description": "aiewfoaw ijofiw jfoweifjoew",
+    "price": 300,
+    "icon_path": "shop/bonfire.png"
   }
 ];

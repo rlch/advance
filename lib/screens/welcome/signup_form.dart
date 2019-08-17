@@ -47,7 +47,6 @@ class _SignUpFormScreenState extends State<SignUpFormScreen> {
     SignUpDetails signUpDetails = Provider.of<SignUpDetails>(context);
     return Material(
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
         body: Stack(fit: StackFit.expand, children: <Widget>[
           Container(
             decoration: BoxDecoration(
@@ -58,6 +57,7 @@ class _SignUpFormScreenState extends State<SignUpFormScreen> {
           ),
           SafeArea(
             child: Column(
+              mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Visibility(

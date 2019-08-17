@@ -20,7 +20,7 @@ Future<FirebaseUser> signUpWithEmail(String email, String password,
   final user = (await _auth.createUserWithEmailAndPassword(
           email: email, password: password))
       .user;
-  await UserService().createUser(user.uid, signUpDetails, remoteConfigSetup);
+  await UserService().createUser(user, signUpDetails, remoteConfigSetup);
   return user;
 }
 
