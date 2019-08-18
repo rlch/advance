@@ -60,7 +60,7 @@ class _RestScreenState extends State<RestScreen>
     }, onDone: () async {
       final nextStep = await workoutController.beginNextWorkoutStep();
       await _controller.reverse();
-      if (_restCountdown.round() == 0) {
+      if (_restCountdown.round() <= 0) {
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (BuildContext context) => nextStep));
       }
@@ -68,7 +68,9 @@ class _RestScreenState extends State<RestScreen>
   }
 
   void _pauseRestTimer() {
-    _isPaused = true;
+    setState(() {
+      _isPaused = true;
+    });
     _restCountdownTimer.cancel();
   }
 

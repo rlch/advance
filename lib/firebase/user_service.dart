@@ -122,9 +122,9 @@ class UserService {
     }, merge: true);
   }
 
-  Future<void> follow(String friend_uid, String user_uid) async {
-    await Firestore.instance.collection('users').document(user_uid).setData({
-      'following': {friend_uid: true}
+  Future<void> follow(String friendUid, String userUid) async {
+    await Firestore.instance.collection('users').document(userUid).setData({
+      'following': {friendUid: true}
     }, merge: true);
   }
 }

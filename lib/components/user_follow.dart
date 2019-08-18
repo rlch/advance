@@ -9,6 +9,12 @@ class UserFollow {
   factory UserFollow.fromMap(String uid, Map data) {
     print(data);
     return UserFollow(
+        data['uid'], data['email'], data['streak']);
+  }
+  
+  factory UserFollow.fromFirestore(String uid, Map data) {
+    print(data);
+    return UserFollow(
         data['uid'], data['email'], data['streak']['current']);
   }
 }

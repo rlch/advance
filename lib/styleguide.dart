@@ -9,8 +9,7 @@ final List<ThemeColor> themeColors = [
       Colors.red, Color(0xffcb2d3e), Color(0xffef473a), Color(0xffcb2d3e)),
   ThemeColor(Colors.deepPurple, Colors.deepPurple[400], Color(0xffb085f5),
       Color(0xff4d2c91)),
-  ThemeColor(Colors.lightBlue, Color(0xff65C7F7), Color(0xff9CECFB),
-      Color(0xff0052D4)),
+  ThemeColor(Colors.blue, Colors.blue, Colors.lightBlue.shade200, Colors.blue.shade400,),
   ThemeColor(Colors.green, Colors.green, Color(0xff80e27e), Color(0xff087f23)),
   ThemeColor(
       Colors.orange, Color(0xffff7e5f), Color(0xfffeb47b), Color(0xffff7e5f),

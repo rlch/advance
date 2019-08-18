@@ -118,7 +118,7 @@ class User {
 
     (data['following'] as Map<dynamic, dynamic>)?.keys?.forEach((uid) {
       Firestore.instance.collection('users').document(uid).get().then((doc) {
-        _following[uid] = UserFollow.fromMap(uid, doc.data);
+        _following[uid] = UserFollow.fromFirestore(uid, doc.data);
       });
     });
 

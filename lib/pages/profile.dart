@@ -49,6 +49,7 @@ class _ProfileState extends State<Profile> {
                 child: FloatingActionButton(
                   child: Icon(
                     Icons.settings,
+                    color: Colors.white,
                   ),
                   onPressed: () {},
                   backgroundColor: Colors.grey,
@@ -183,7 +184,7 @@ class _ProfileState extends State<Profile> {
                                 fontSize: 20,
                                 fontWeight: FontWeight.w500,
                                 color: (user.streak.target == 1)
-                                    ? Colors.pink
+                                    ? user.appTheme.themeColor.primary
                                     : Colors.black),
                           ),
                           trailing: Text("1 workout a day"),
@@ -214,7 +215,7 @@ class _ProfileState extends State<Profile> {
                                 fontSize: 20,
                                 fontWeight: FontWeight.w500,
                                 color: (user.streak.target == 2)
-                                    ? Colors.pink
+                                    ? user.appTheme.themeColor.primary
                                     : Colors.black),
                           ),
                           trailing: Text("2 workouts a day"),
@@ -238,7 +239,7 @@ class _ProfileState extends State<Profile> {
                                 fontSize: 20,
                                 fontWeight: FontWeight.w500,
                                 color: (user.streak.target == 3)
-                                    ? Colors.pink
+                                    ? user.appTheme.themeColor.primary
                                     : Colors.black),
                           ),
                           trailing: Text('3 workouts a day'),
@@ -253,98 +254,133 @@ class _ProfileState extends State<Profile> {
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.endFloat,
               floatingActionButton: FloatingActionButton.extended(
-                onPressed: () {
-                  return showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20))),
-                            content: TextField(
-                              controller: _emailController,
-                              decoration:
-                                  InputDecoration(hintText: "Friend's email"),
-                            ),
-                            actions: <Widget>[
-                              FlatButton(
-                                child: new Text(
-                                  'Cancel',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                              FlatButton(
-                                child: new Text('Submit'),
-                                onPressed: () async {
-                                  final HttpsCallable checkEmail =
-                                      CloudFunctions.instance.getHttpsCallable(
-                                    functionName: 'followUser',
-                                  );
-                                  try {
-                                    dynamic res = await checkEmail.call({
-                                      'email': _emailController.text.trim()
-                                    });
-                                    if (user.following == null) {
-                                      user.following = {};
-                                    }
-                                    print(res);
-                                     setState(() {
-                                      user.following[res.data['uid']] =
-                                          UserFollow.fromMap(
-                                              res.data['uid'], res.data);
-                                    });
-                                    await UserService().follow(
-                                        res.data['uid'], user.firebaseUser.uid);
-                                  } catch (e) {
-                                    print(e);
-                                  }
-                                  Navigator.of(context).pop();
-                                },
-                              )
-                            ],
-                          ));
-                },
-                label: Text('Add Friend'),
+                onPressed: (){},
+                label: Text('Invite Friend', style: TextStyle(color: Colors.white),),
                 backgroundColor: user.appTheme.themeColor.primary,
               ),
-              body: ListView.builder(
-                itemCount: user.following?.length ?? 0,
-                itemBuilder: (context, index) {
-                  String slug = user.following.keys.toList()[index];
-                  print(user.following[slug].email);
-                  return ListTile(
-                    title: Text(
-                      user.following[slug].nickname ??
-                          user.following[slug].email,
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    leading: CircleAvatar(
-                      backgroundColor: user.appTheme.themeColor.primary,
-                      child: Icon(Icons.person),
-                    ),
-                    trailing: Row(
+              body: Column(
+                children: <Widget>[
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(top: 20, left: 20, bottom: 20),
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        IconButton(
-                            icon: Icon(UiElements.fire),
-                            tooltip: 'Streak',
-                            onPressed: () {},
-                            color: Colors.red),
-                        Text(
-                          user.following[slug].streak.toString(),
-                          style: TextStyle(
-                              fontFamily: 'WorkSans',
-                              fontWeight: FontWeight.w800,
-                              fontSize: 17,
-                              color: Colors.red),
-                        ),
+                        GestureDetector(
+                          onTap: () {
+                            return showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20))),
+                                      content: TextField(
+                                        controller: _emailController,
+                                        decoration: InputDecoration(
+                                            hintText: "Friend's email"),
+                                      ),
+                                      actions: <Widget>[
+                                        FlatButton(
+                                          child: new Text(
+                                            'Cancel',
+                                            style:
+                                                TextStyle(color: Colors.grey),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        FlatButton(
+                                          child: new Text('Submit'),
+                                          onPressed: () async {
+                                            final HttpsCallable checkEmail =
+                                                CloudFunctions.instance
+                                                    .getHttpsCallable(
+                                              functionName: 'followUser',
+                                            );
+                                            try {
+                                              dynamic res = await checkEmail
+                                                  .call({
+                                                'email':
+                                                    _emailController.text.trim()
+                                              });
+                                              if (user.following == null) {
+                                                user.following = {};
+                                              }
+                                              print(res);
+                                              user.following[res.data['uid']] =
+                                                  UserFollow.fromMap(
+                                                      res.data['uid'],
+                                                      res.data);
+
+                                              await UserService().follow(
+                                                  res.data['uid'],
+                                                  user.firebaseUser.uid);
+                                              setState(() {});
+                                            } catch (e) {
+                                              print(e);
+                                            }
+                                            Navigator.of(context).pop();
+                                          },
+                                        )
+                                      ],
+                                    ));
+                          },
+                          child: Text(
+                            'ADD',
+                            style: TextStyle(
+                                color: user.appTheme.themeColor.primary,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 16),
+                          ),
+                        )
                       ],
                     ),
-                  );
-                },
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      padding: EdgeInsets.all(10),
+                      itemCount: user.following?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        String slug = user.following.keys.toList()[index];
+                        print(user.following[slug].email);
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: ListTile(
+                            title: Text(
+                              user.following[slug].nickname ??
+                                  user.following[slug].email,
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            leading: CircleAvatar(
+                              backgroundColor: user.appTheme.themeColor.primary,
+                              child: Icon(Icons.person),
+                            ),
+                            trailing: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                IconButton(
+                                    icon: Icon(UiElements.fire),
+                                    tooltip: 'Streak',
+                                    onPressed: () {},
+                                    color: Colors.red),
+                                Text(
+                                  user.following[slug].streak.toString(),
+                                  style: TextStyle(
+                                      fontFamily: 'WorkSans',
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 17,
+                                      color: Colors.red),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             )
           ],

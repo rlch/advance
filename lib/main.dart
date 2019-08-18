@@ -298,7 +298,7 @@ class _MainControllerState extends State<MainController> {
                     ? WorkoutCustomScreen()
                     : WorkoutCustomCreateScreen()));
           },
-          child: Icon(Icons.add),
+          child: Icon(Icons.add, color: Colors.white,),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,

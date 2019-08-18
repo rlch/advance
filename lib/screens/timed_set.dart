@@ -17,7 +17,7 @@ class TimedSetScreen extends StatefulWidget {
 
 class _TimedSetScreenState extends State<TimedSetScreen>
     with SingleTickerProviderStateMixin {
-  int _countdown;
+  double _countdown;
   bool _isPaused;
   double _workoutStepCountdown;
   bool _workoutStepStarted;
@@ -45,25 +45,21 @@ class _TimedSetScreenState extends State<TimedSetScreen>
   void _startTimedSetTimer(TimedSet timedSet, {double resumeAt}) {
     WorkoutController workoutController =
         Provider.of<WorkoutController>(context);
-    _countdown = timedSet.duration.inSeconds;
+    _countdown = resumeAt ?? timedSet.duration.inSeconds.toDouble();
     _workoutCountdownTimer = CountdownTimer(
-        Duration(seconds: _countdown), Duration(milliseconds: 1));
+        Duration(seconds: _countdown.round()), Duration(milliseconds: 1));
 
     var sub = _workoutCountdownTimer.listen(null);
     sub.onData((duration) {
       setState(() {
-        if (resumeAt == null) {
-          _workoutStepCountdown = timedSet.duration.inSeconds -
-              duration.elapsed.inMilliseconds / 1000;
-        } else {
-          _workoutStepCountdown =
-              resumeAt - duration.elapsed.inMilliseconds / 1000;
-        }
+        _workoutStepCountdown =
+            _countdown - duration.elapsed.inMilliseconds / 1000;
       });
     });
 
     sub.onDone(() async {
-      if (_workoutStepCountdown.round() == 0) {
+      print('here');
+      if (_workoutStepCountdown.round() <= 0) {
         final nextStep = await workoutController.beginNextWorkoutStep();
         await _controller.reverse();
         Navigator.of(context).pushReplacement(
@@ -74,7 +70,9 @@ class _TimedSetScreenState extends State<TimedSetScreen>
   }
 
   void _pauseTimer() {
-    _isPaused = true;
+    setState(() {
+      _isPaused = true;
+    });
     _workoutCountdownTimer.cancel();
   }
 
