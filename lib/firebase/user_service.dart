@@ -69,7 +69,7 @@ class UserService {
         await Firestore.instance.collection('users').document(uid).get();
 
     int _workoutsCompleted = 1;
-    double _experience = workout.experience;
+    double _experience = workout.experience / (doc.data['workouts'][workoutArea.slug]['exercises'][workout.slug]['times_completed'] + 1);
     int _timestamp = date.millisecondsSinceEpoch;
     int _currentStreak = doc.data['streak']['current'];
     if ((doc.data['streak']['history'] as Map<dynamic, dynamic>)
@@ -78,7 +78,7 @@ class UserService {
               ['workouts_completed'] +
           1;
       _experience = doc.data['streak']['history'][formattedDate]['experience'] +
-          workout.experience;
+          workout.experience / (doc.data['workouts'][workoutArea.slug]['exercises'][workout.slug]['times_completed'] + 1);
       _timestamp = doc.data['streak']['history'][formattedDate]['timestamp'];
     }
     if (_workoutsCompleted == doc.data['streak']['target']) {
@@ -109,7 +109,7 @@ class UserService {
             }
           },
           "experience": doc.data['workouts'][workoutArea.slug]['experience'] +
-              workout.experience
+             workout.experience / (doc.data['workouts'][workoutArea.slug]['exercises'][workout.slug]['times_completed'] + 1)
         }
       }
     }, merge: true);

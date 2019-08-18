@@ -94,10 +94,13 @@ class _WorkoutResultsLevelScreenState extends State<WorkoutResultsAdScreen> {
                         Material(
                             color: Colors.transparent,
                             child: toHeroContext.widget),
-                    child: Text(
-                      "Help us grow and keep fitness free!",
-                      textAlign: TextAlign.center,
-                      style: AppTheme.heading,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Text(
+                        "Help us grow and keep fitness free!",
+                        textAlign: TextAlign.center,
+                        style: AppTheme.heading,
+                      ),
                     ),
                   ),
                 ),

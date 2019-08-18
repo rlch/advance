@@ -38,8 +38,34 @@ class WorkoutController {
 
   FlutterTts flutterTts = FlutterTts();
 
-  Future<Widget> beginNextWorkoutStep() async {
+  Future<Widget> beginPreviousWorkoutStep() async {
+    List<dynamic> languages = await flutterTts.getLanguages;
+    if (languages.contains("en-AU")) {
+      await flutterTts.setLanguage("en-AU");
+    } else {
+      await flutterTts.setLanguage("en-US");
+    }
 
+    if (currentWorkoutStepIndex > 0) {
+      currentWorkoutStepIndex -= 1;
+    }
+
+    _currentWorkoutStep = workout.workoutSteps[currentWorkoutStepIndex];
+    if (_currentWorkoutStep is TimedSet) {
+      flutterTts.speak(workout.workoutSteps[currentWorkoutStepIndex].title);
+      return _provider(TimedSetScreen());
+    } else if (_currentWorkoutStep is RepSet) {
+      flutterTts.speak(workout.workoutSteps[currentWorkoutStepIndex].title);
+      return _provider(RepSetScreen());
+    } else if (_currentWorkoutStep is Rest) {
+      flutterTts.speak('Prepare for ' + workout.workoutSteps[currentWorkoutStepIndex+1].title);
+      return _provider(RestScreen());
+    }
+
+    return null;
+  }
+
+  Future<Widget> beginNextWorkoutStep() async {
     List<dynamic> languages = await flutterTts.getLanguages;
     if (languages.contains("en-AU")) {
       await flutterTts.setLanguage("en-AU");
@@ -53,13 +79,15 @@ class WorkoutController {
       currentWorkoutStepIndex += 1;
     }
     if (currentWorkoutStepIndex < workout.workoutSteps.length) {
-      flutterTts.speak(workout.workoutSteps[currentWorkoutStepIndex].title);
       _currentWorkoutStep = workout.workoutSteps[currentWorkoutStepIndex];
       if (_currentWorkoutStep is TimedSet) {
+        flutterTts.speak(workout.workoutSteps[currentWorkoutStepIndex].title);
         return _provider(TimedSetScreen());
       } else if (_currentWorkoutStep is RepSet) {
+        flutterTts.speak(workout.workoutSteps[currentWorkoutStepIndex].title);
         return _provider(RepSetScreen());
       } else if (_currentWorkoutStep is Rest) {
+        flutterTts.speak('Prepare for ' + workout.workoutSteps[currentWorkoutStepIndex+1].title);
         return _provider(RestScreen());
       }
     } else {
@@ -99,11 +127,11 @@ class WorkoutController {
 
     if (history.workoutsCompleted == user.streak.target) {
       user.streak.current += 1;
-    } 
+    }
 
     user.workouts[workoutArea.slug].exercises
         .updateAll((id, exercise) => UserExercise(exercise.timesCompleted + 1));
-    user.workouts[workoutArea.slug].experience.amount += workout.experience;
+    user.workouts[workoutArea.slug].experience.amount += workout.experience / (user.workouts[workoutArea.slug].exercises[workout.slug].timesCompleted);
   }
 
   WorkoutStep getWorkoutStepAtIndex(int index) {
@@ -116,7 +144,12 @@ class WorkoutController {
       return finishSteps[0];
     } else if (finishIndex < finishSteps.length) {
       finishIndex += 1;
-      return finishSteps[finishIndex];
+      try {
+        final finishStep = finishSteps[finishIndex];
+        return finishStep;
+      } catch (e) {
+        return null;
+      }
     }
     return null;
   }

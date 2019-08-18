@@ -7,6 +7,7 @@ import 'package:advance/screens/welcome/get_started.dart';
 import 'package:advance/styleguide.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_villains/villain.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:provider/provider.dart';
@@ -218,24 +219,55 @@ class _SignUpFormScreenState extends State<SignUpFormScreen> {
                               });
                               if (_emailKey.currentState.validate() &&
                                   _passwordKey.currentState.validate()) {
-                                RemoteConfigSetup remoteConfigSetup =
-                                    Provider.of<RemoteConfigSetup>(context);
-                                final firebaseUser = await signUpWithEmail(
-                                    _emailController.text.trim(),
-                                    _passwordController.text,
-                                    signUpDetails,
-                                    remoteConfigSetup);
-                                FocusScope.of(context).unfocus();
+                                try {
+                                  RemoteConfigSetup remoteConfigSetup =
+                                      Provider.of<RemoteConfigSetup>(context);
+                                  final firebaseUser = await signUpWithEmail(
+                                      _emailController.text.trim(),
+                                      _passwordController.text,
+                                      signUpDetails,
+                                      remoteConfigSetup);
+                                  FocusScope.of(context).unfocus();
 
-                                runApp(MultiProvider(providers: [
-                                  Provider.value(
-                                    value: remoteConfigSetup,
-                                  ),
-                                  StreamProvider<User>(
-                                      initialData: User.base(remoteConfigSetup),
-                                      builder: (_) => UserService()
-                                          .streamUser(firebaseUser)),
-                                ], child: RootApp()));
+                                  runApp(MultiProvider(providers: [
+                                    Provider.value(
+                                      value: remoteConfigSetup,
+                                    ),
+                                    StreamProvider<User>(
+                                        initialData:
+                                            User.base(remoteConfigSetup),
+                                        builder: (_) => UserService()
+                                            .streamUser(firebaseUser)),
+                                  ], child: RootApp()));
+                                } catch (error) {
+                                  switch ((error as PlatformException).code) {
+                                    case 'ERROR_INVALID_EMAIL':
+                                      setState(() {
+                                        _emailValidator = 'Email malformed.';
+                                        _emailKey.currentState.validate();
+                                        _emailValidator = null;
+                                      });
+                                      break;
+                                    case 'ERROR_WRONG_PASSWORD':
+                                    case 'ERROR_EMAIL_ALREADY_IN_USE':
+                                      setState(() {
+                                        _emailValidator = 'Email already in use';
+                                        _emailKey.currentState.validate();
+                                        _emailValidator = null;
+                                      });
+                                      break;
+                                    default:
+                                      setState(() {
+                                        _emailValidator = '';
+                                        _passwordValidator = '';
+                                        _emailKey.currentState.validate();
+                                        _passwordKey.currentState.validate();
+                                        _emailValidator = null;
+                                        _passwordValidator = null;
+                                      });
+                                      break;
+                                  }
+                                }
                               }
                               setState(() {
                                 _isLoading = false;

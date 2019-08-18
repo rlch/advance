@@ -2,6 +2,7 @@ import 'package:advance/components/exercise.dart';
 import 'package:advance/components/user.dart';
 import 'package:advance/screens/workout.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_youtube/flutter_youtube.dart';
 import 'package:provider/provider.dart';
 
 import '../styleguide.dart';
@@ -81,6 +82,32 @@ class _RepSetScreenState extends State<RepSetScreen>
                       style: AppTheme.heading,
                     ),
                   ),
+                  actions: <Widget>[
+                    workoutController.workout.workoutSteps[_currentScreenIndex]
+                                .videoId !=
+                            null
+                        ? Padding(
+                            padding: const EdgeInsets.only(right: 12),
+                            child: IconButton(
+                              onPressed: () {
+                                return FlutterYoutube.playYoutubeVideoById(
+                                    apiKey:
+                                        'AIzaSyB5iSZcVN5BGHnHSnRuHSOZ5wVkfFqrghA',
+                                    videoId: workoutController
+                                        .workout
+                                        .workoutSteps[workoutController
+                                            .currentWorkoutStepIndex]
+                                        .videoId,
+                                    autoPlay: true,
+                                    fullScreen: false);
+                              },
+                              color: Colors.white,
+                              icon: Icon(Icons.videocam),
+                              iconSize: 40,
+                            ),
+                          )
+                        : Container()
+                  ],
                   leading: Hero(
                     flightShuttleBuilder: (BuildContext flightContext,
                             Animation<double> animation,
@@ -129,31 +156,93 @@ class _RepSetScreenState extends State<RepSetScreen>
                     ],
                   )),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 50.0),
-                  child: Hero(
-                    tag: 'workout-button',
-                    child: RaisedButton(
-                      elevation: 8,
-                      color: Colors.white,
-                      textColor: user.appTheme.themeColor.primary,
+                Column(
+                  children: <Widget>[
+                    Padding(
                       padding:
-                          EdgeInsets.symmetric(vertical: 15, horizontal: 22),
-                      onPressed: () async {
-                        final nextStep = await workoutController.beginNextWorkoutStep();
-                        await _controller.reverse();
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (BuildContext context) => nextStep));
-                      },
-                      child: Text(
-                        "Continue",
-                        style: TextStyle(fontSize: 20, fontFamily: "WorkSans"),
+                          EdgeInsets.symmetric(vertical: 50, horizontal: 30),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Hero(
+                            tag: 'backward',
+                            child: GestureDetector(
+                              onTap: () async {
+                                final previousStep = await workoutController
+                                    .beginPreviousWorkoutStep();
+                                return Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(builder: (context) {
+                                  return previousStep;
+                                }));
+                              },
+                              child: Icon(
+                                Icons.keyboard_arrow_left,
+                                size: 45,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          Hero(
+                            tag: 'workout-button',
+                            child: RaisedButton(
+                              elevation: 8,
+                              color: Colors.white,
+                              textColor: user.appTheme.themeColor.primary,
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 15, horizontal: 22),
+                              onPressed: () async {
+                                final nextStep = await workoutController
+                                    .beginNextWorkoutStep();
+                                await _controller.reverse();
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            nextStep));
+                              },
+                              child: Text(
+                                "Continue",
+                                style: TextStyle(
+                                    fontSize: 20, fontFamily: "WorkSans"),
+                              ),
+                              shape: new RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(40)),
+                            ),
+                          ),
+                          Container(
+                            width: 45,
+                          )
+                        ],
                       ),
-                      shape: new RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(40)),
                     ),
-                  ),
-                ),
+                    Hero(
+                      tag: 'timeline',
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: List.generate(
+                            workoutController.workout.workoutSteps.length,
+                            (index) {
+                          return Flexible(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 2),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(5)),
+                                  color: index <=
+                                          workoutController
+                                              .currentWorkoutStepIndex
+                                      ? Colors.white
+                                      : Colors.black.withOpacity(0.3),
+                                ),
+                                height: 10,
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                    )
+                  ],
+                )
               ],
             ),
           ),

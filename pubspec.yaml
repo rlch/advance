@@ -43,10 +43,10 @@ dependencies:
   slugify: ^1.0.0
   firebase_storage: ^3.0.5
   in_app_purchase: ^0.2.1
-  sticky_headers: "^0.1.8"
   audioplayer: ^0.5.2
   flutter_tts: ^0.2.6
   intro_slider: ^2.2.7
+  flutter_youtube: ^1.1.6
   cache_image:
     git:
       url: https://github.com/rlch/flutter_cache_image.git

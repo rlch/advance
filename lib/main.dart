@@ -14,6 +14,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'components/user.dart';
@@ -23,10 +24,11 @@ import 'package:flutter_villains/villains/villains.dart';
 
 void main() async {
   FirebaseAnalytics analytics = FirebaseAnalytics();
-  await FirebaseAuth.instance.signOut();
+  //await FirebaseAuth.instance.signOut();
   FirebaseUser firebaseUser = await checkAuthStatus();
 
   RemoteConfigSetup remoteConfigSetup = await RemoteConfigSetup().setup();
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(systemNavigationBarIconBrightness: Brightness.dark, statusBarIconBrightness: Brightness.dark));
 
   if (firebaseUser == null) {
     runApp(Provider.value(

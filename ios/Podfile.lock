@@ -132,6 +132,9 @@ PODS:
     - Flutter
   - flutter_tts (0.0.1):
     - Flutter
+  - flutter_youtube (0.0.1):
+    - Flutter
+    - XCDYouTubeKit
   - Google-Mobile-Ads-SDK (7.47.0):
     - GoogleAppMeasurement (~> 6.0)
   - GoogleAppMeasurement (6.0.3):
@@ -190,6 +193,7 @@ PODS:
     - Flutter
   - Protobuf (3.9.0)
   - Reachability (3.2)
+  - XCDYouTubeKit (2.7.7)
 
 DEPENDENCIES:
   - audioplayer (from `.symlinks/plugins/audioplayer/ios`)
@@ -205,6 +209,7 @@ DEPENDENCIES:
   - Flutter (from `.symlinks/flutter/ios`)
   - flutter_picker (from `.symlinks/plugins/flutter_picker/ios`)
   - flutter_tts (from `.symlinks/plugins/flutter_tts/ios`)
+  - flutter_youtube (from `.symlinks/plugins/flutter_youtube/ios`)
   - in_app_purchase (from `.symlinks/plugins/in_app_purchase/ios`)
   - keyboard_visibility (from `.symlinks/plugins/keyboard_visibility/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
@@ -235,6 +240,7 @@ SPEC REPOS:
     - nanopb
     - Protobuf
     - Reachability
+    - XCDYouTubeKit
 
 EXTERNAL SOURCES:
   audioplayer:
@@ -263,6 +269,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_picker/ios"
   flutter_tts:
     :path: ".symlinks/plugins/flutter_tts/ios"
+  flutter_youtube:
+    :path: ".symlinks/plugins/flutter_youtube/ios"
   in_app_purchase:
     :path: ".symlinks/plugins/in_app_purchase/ios"
   keyboard_visibility:
@@ -298,6 +306,7 @@ SPEC CHECKSUMS:
   Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
   flutter_picker: 8ff0d7440b4e8327fcc9e6b21a39ef9369e697c7
   flutter_tts: 8ef9d28ecff6321d667307300dbf45151273b3fb
+  flutter_youtube: 142f8d5af0a11963bdc73e13bcae6eb78db746c2
   Google-Mobile-Ads-SDK: a10b30f4a51a3283df7df3c9ea7e84553b508e4b
   GoogleAppMeasurement: 1e45fa601e6280c180880d57010390f6679cd971
   GoogleUtilities: d2b0e277a95962e09bb27f5cd42f5f0b6a506c7d
@@ -311,6 +320,7 @@ SPEC CHECKSUMS:
   path_provider: f96fff6166a8867510d2c25fdcc346327cc4b259
   Protobuf: 1097ca58584c8d9be81bfbf2c5ff5975648dd87a
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
+  XCDYouTubeKit: ab0bd023c24c69a417c8beacda9502e99e23d6b4
 
 PODFILE CHECKSUM: b6a0a141693093b304368d08511b46cf3d1d0ac5
 

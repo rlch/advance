@@ -1,18 +1,24 @@
 class WorkoutStep {
   String title;
+  String videoId;
 
   factory WorkoutStep.fromConfig(Map data) {
-    return WorkoutStep(data['title']);
+    if (data.containsKey('video_id')) {
+      return WorkoutStep(data['title'], videoId: data['video_id']);
+    }
+    return WorkoutStep(data['title'], videoId: null);
   }
 
-  WorkoutStep(this.title);
+  WorkoutStep(this.title, {this.videoId});
 }
 
 class TimedSet extends WorkoutStep {
   Duration duration;
 
   factory TimedSet.fromConfig(Map data, WorkoutStep workoutStep) {
-    return TimedSet(workoutStep.title, Duration(seconds: data['duration']));
+    print(workoutStep.title);
+    print(workoutStep.videoId);
+    return TimedSet(workoutStep.title, Duration(seconds: data['duration']), videoId: workoutStep.videoId);
   }
 
   Map<String, dynamic> toJson() {
@@ -23,21 +29,21 @@ class TimedSet extends WorkoutStep {
     };
   }
 
-  TimedSet(String title, this.duration) : super(title);
+  TimedSet(String title, this.duration, {videoId}) : super(title, videoId: videoId);
 }
 
 class RepSet extends WorkoutStep {
   int reps;
 
   factory RepSet.fromConfig(Map data, WorkoutStep workoutStep) {
-    return RepSet(workoutStep.title, data['reps']);
+    return RepSet(workoutStep.title, data['reps'], videoId: workoutStep.videoId);
   }
 
   Map<String, dynamic> toJson() {
     return {"type": "rep_set", "title": title, "reps": reps};
   }
 
-  RepSet(String title, this.reps) : super(title);
+  RepSet(String title, this.reps, {videoId}) : super(title, videoId: videoId);
 }
 
 class Rest extends WorkoutStep {

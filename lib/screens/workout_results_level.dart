@@ -98,7 +98,7 @@ class _WorkoutResultsLevelScreenState extends State<WorkoutResultsLevelScreen>
                           footer: Padding(
                             padding: const EdgeInsets.only(top: 30),
                             child: Text(
-                              "+${workoutController.workout.experience.round()} XP",
+                              "+${(workoutController.workout.experience / (user.workouts[workoutController.workoutArea.slug].exercises[workoutController.workout.slug].timesCompleted + 1)).round()} XP",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 30,
@@ -110,8 +110,11 @@ class _WorkoutResultsLevelScreenState extends State<WorkoutResultsLevelScreen>
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Text(
-                                user.workouts[workoutController.workoutArea.slug]
-                                    .experience.level
+                                user
+                                    .workouts[
+                                        workoutController.workoutArea.slug]
+                                    .experience
+                                    .level
                                     .toString(),
                                 style: TextStyle(
                                   color: Colors.white,
